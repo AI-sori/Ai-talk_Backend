@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 // Cannot resolve symbol 'AbstractHttpConfigurer' (Spring Security 6 이상을 사용할 때 발생)
@@ -16,8 +17,15 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 @Configuration
 public class SecurityConfig {
 
+    // 비밀번호 암호화 기능을 추가하기 위한, Bean 등록
+    @Bean
+    public static BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         // form 인증 비활성화(form 기반 인증을 할것인지를 체크)
         // Rest-API를 통해 JSON으로 통신해 발급받은 token으로 인증 유효성을 따질것이므로 필요가 없어서 disable
         http.formLogin(AbstractHttpConfigurer::disable);

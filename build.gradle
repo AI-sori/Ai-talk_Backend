@@ -45,6 +45,10 @@ dependencies {
 
 	//oauth(소셜 로그인)
 	//implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+
+	//Cannot resolve symbol 'NotBlank'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 tasks.named('test') {
