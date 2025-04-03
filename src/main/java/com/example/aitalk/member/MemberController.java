@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @AllArgsConstructor // 모든 필드를 초기화하는 생성자 자동 생성 (의존성 주입)
 @RequestMapping("/members")
-public class MemberRestController {
+public class MemberController {
     private final MemberService memberService;
 
     /* 회원가입 진행 */
@@ -21,7 +21,7 @@ public class MemberRestController {
 
         // 회원가입 실패 시 (이미 가입된 회원)
         if (memberJoinResponseDTO.getStatusCode() == 401) {
-            return Response.error(memberJoinResponseDTO);
+            return Response.error(memberJoinResponseDTO); // ✅ DTO 전체 반환 가능
         }
         // 회원가입 성공 시
         return Response.success(memberJoinResponseDTO);
