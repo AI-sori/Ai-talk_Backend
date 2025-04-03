@@ -32,6 +32,7 @@ public class MemberController {
     public Response<MemberLoginResponseDTO> login(@RequestBody MemberLoginRequestDTO memberLoginRequestDTO) {
         // 로그인 서비스 호출
         MemberLoginResponseDTO memberLoginResponseDTO = memberService.login(memberLoginRequestDTO);
+        //login() 메서드에 @RequestBody 내용을 MemberLoginRequestDTO에 담아 호출한다
 
         // 로그인 실패 시 (아이디 없음 또는 비밀번호 불일치)
         if (memberLoginResponseDTO.getStatusCode() == 401) {
@@ -39,5 +40,7 @@ public class MemberController {
         }
         // 로그인 성공 시
         return Response.success(memberLoginResponseDTO);
+
+        // MemberService에서 받은 MemberResponseDTO를 클라이언트에 보낸다.
     }
 }

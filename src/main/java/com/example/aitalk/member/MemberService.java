@@ -53,9 +53,10 @@ public class MemberService {
         // 빌더 패턴을 사용하여 응답 객체 초기화
         MemberLoginResponseDTO.MemberLoginResponseDTOBuilder responseBuilder = MemberLoginResponseDTO.builder();
 
+        // 넘겨받은 MemberLoginRequestDTO의 Email parameter를 이용하여 Member 정보를 가져온다.
         // 이메일로 회원 정보 조회
         Optional<Member> optionalMember = memberRepository.findMemberByEmail(memberLoginRequestDTO.getEmail());
-        if(optionalMember.isEmpty()){
+        if(optionalMember.isEmpty()){ // Member 정보가 없으면
             return responseBuilder
                     .statusCode(401)
                     .message("회원 정보를 찾을 수 없습니다.")
@@ -64,12 +65,15 @@ public class MemberService {
 
         Member member = (Member) optionalMember.get(); // Optional에서 Member 객체 추출
 
+        // 조건문을 통해 가져온 Member 정보와 RequestDTO에 담긴 Member의 email, password와 일치하는지 확인
         if(!bCryptPasswordEncoder.matches(memberLoginRequestDTO.getPassword(), member.getPassword())){
             return responseBuilder
                     .statusCode(401)
                     .message("비밀번호가 일치하지 않습니다.")
                     .build();
         }
+        // 이때 password는 RequestDTO에 가져온 비밀번호를 SecurityConfig 클래스에 Bean 객체로 등록되어
+        // 주입된 BCryptPasswordEncoder 클래스의 matches() 메서드를 사용해서 일치하는지 여부를 확인
 
         return responseBuilder
                 .statusCode(200)
@@ -77,4 +81,6 @@ public class MemberService {
                 .email(member.getEmail())
                 .build();
     }
+    // 성공을 의미하는 http 상태코드 200, 로그인 성공 메시지, 로그인 id를 MemberResponse 객체에 담아 
+    // MemberRestController에 돌려줌
 }
