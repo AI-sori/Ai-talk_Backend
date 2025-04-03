@@ -54,7 +54,7 @@ public class MemberService {
         MemberLoginResponseDTO.MemberLoginResponseDTOBuilder responseBuilder = MemberLoginResponseDTO.builder();
 
         // 이메일로 회원 정보 조회
-        Optional<Object> optionalMember = memberRepository.findMemberByEmail(memberLoginRequestDTO.getEmail());
+        Optional<Member> optionalMember = memberRepository.findMemberByEmail(memberLoginRequestDTO.getEmail());
         if(optionalMember.isEmpty()){
             return responseBuilder
                     .statusCode(401)
