@@ -52,6 +52,9 @@ dependencies {
 
 	// swagger 사용
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+	// maria db
+	implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
 }
 
 tasks.named('test') {
