@@ -49,6 +49,9 @@ dependencies {
 
 	//Cannot resolve symbol 'NotBlank'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// swagger 사용
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 }
 
 tasks.named('test') {
