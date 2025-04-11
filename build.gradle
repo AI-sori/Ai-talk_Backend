@@ -18,9 +18,11 @@ repositories {
 }
 
 dependencies {
+	//spring boot
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
 	implementation 'org.springframework.boot:spring-boot-starter-web-services'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	runtimeOnly 'com.h2database:h2'
@@ -29,6 +31,30 @@ dependencies {
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	//lombok
+	implementation 'org.projectlombok:lombok:1.18.22'
+	annotationProcessor 'org.projectlombok:lombok'
+	compileOnly 'org.projectlombok:lombok'
+
+	//security - jwt
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+	implementation 'com.auth0:java-jwt:4.2.1'
+
+	//oauth(소셜 로그인)
+	//implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+
+	//Cannot resolve symbol 'NotBlank'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// swagger 사용
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+	// maria db
+	implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
 }
 
 tasks.named('test') {

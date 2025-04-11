@@ -1,0 +1,22 @@
+server:
+  port: 8080
+spring:
+  main:
+    allow-bean-definition-overriding: true
+    # db 관련 설정
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://${DB_url}:${DB_port}/${DB_dataBaseName}?useUnicode=yes&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Seoul
+    username: ${DB_name} #유저네임
+    password: ${DB_password} #암호
+  jpa:
+    hibernate:
+      ddl-auto: create #JPA 자동 테이블 생성
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  security:
