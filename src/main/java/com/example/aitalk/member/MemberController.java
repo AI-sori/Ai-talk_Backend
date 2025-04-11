@@ -1,6 +1,8 @@
 package com.example.aitalk.member;
 
 import com.example.aitalk.security.Response;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +17,9 @@ public class MemberController {
 
     /* 회원가입 진행 */
     @PostMapping("/join")
-    public Response<MemberJoinResponseDTO> join(@RequestBody MemberJoinRequestDTO memberJoinRequestDTO) {
+    @ApiResponse(responseCode = "200", description = "성공")
+    @ApiResponse(responseCode = "401", description = "이미 가입된 회원")
+    public Response<MemberJoinResponseDTO> join(@RequestBody @Valid MemberJoinRequestDTO memberJoinRequestDTO) {
         // 회원가입 서비스 호출
         MemberJoinResponseDTO memberJoinResponseDTO = memberService.join(memberJoinRequestDTO);
 
