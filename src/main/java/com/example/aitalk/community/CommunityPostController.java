@@ -1,7 +1,5 @@
 package com.example.aitalk.community;
 
-import com.example.aitalk.community.CommunityPostRequestDTO;
-import com.example.aitalk.community.CommunityPostResponseDTO;
 import com.example.aitalk.member.Member;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -18,17 +16,23 @@ public class CommunityPostController {
 
     @PostMapping("/post")
     public ResponseEntity<String> createPost(@RequestBody CommunityPostRequestDTO dto, HttpSession session) {
-        Member loginMember = (Member) session.getAttribute("loginMember");
-        if (loginMember == null) {
+        // 세션에서 로그인된 사용자 꺼내기
+        Member loginUser = (Member) session.getAttribute("loginUser");
+
+        // 로그인되지 않았다면
+        if (loginUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
         }
 
+        // 게시글 작성
         try {
-            communityPostService.createPost(dto, loginMember.getId());
+            // loginUser의 id를 이용해 게시글 작성
+            communityPostService.createPost(dto, loginUser.getId());
             return ResponseEntity.ok("게시글 작성 완료");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("게시글 작성 실패: " + e.getMessage());
         }
     }
+
 
 }

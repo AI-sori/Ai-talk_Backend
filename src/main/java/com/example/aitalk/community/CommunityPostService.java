@@ -12,26 +12,17 @@ public class CommunityPostService {
     private final CommunityPostRepository communityPostRepository;
     private final MemberRepository memberRepository;
 
-    public CommunityPostResponseDTO createPost(CommunityPostRequestDTO request, Long id) {
-        Member member = memberRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
-
+    public void createPost(CommunityPostRequestDTO dto, Long userId) {
+        // userId를 여기서 사용해서 게시글 작성 처리
+        // 예시:
         CommunityPost post = new CommunityPost();
-        post.setMember(member);
-        post.setCategory(request.getCategory());
-        post.setTitle(request.getTitle());
-        post.setContent(request.getContent());
-        post.setImage(request.getImage());
+        post.setUserId(userId); // or post.setMemberId(userId);
+        post.setCategory(dto.getCategory());
+        post.setTitle(dto.getTitle());
+        post.setContent(dto.getContent());
+        post.setImage(dto.getImage());
 
-        CommunityPost saved = communityPostRepository.save(post);
-
-        return new CommunityPostResponseDTO(
-                saved.getId(),
-                member.getNickname(),
-                saved.getCategory(),
-                saved.getTitle(),
-                saved.getContent(),
-                saved.getImage()
-        );
+        communityPostRepository.save(post);
     }
+
 }

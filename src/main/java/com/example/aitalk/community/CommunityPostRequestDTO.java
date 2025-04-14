@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CommunityPostRequestDTO {
-    private Long userId;
+//    private Long userId;
     private String category;
     private String title;
     private String content;

@@ -29,5 +29,8 @@ public class CommunityPost {
     private String image;
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    public void setUserId(Long userId) {
+    }
+
     // Getter/Setter 생성자 등
 }

@@ -2,6 +2,7 @@ package com.example.aitalk.member;
 
 import com.example.aitalk.security.Response;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,19 +33,23 @@ public class MemberController {
     }
 
     /* 로그인 */
-    @PostMapping("/login")
-    public Response<MemberLoginResponseDTO> login(@RequestBody MemberLoginRequestDTO memberLoginRequestDTO) {
-        // 로그인 서비스 호출
-        MemberLoginResponseDTO memberLoginResponseDTO = memberService.login(memberLoginRequestDTO);
-        //login() 메서드에 @RequestBody 내용을 MemberLoginRequestDTO에 담아 호출한다
 
-        // 로그인 실패 시 (아이디 없음 또는 비밀번호 불일치)
+    @PostMapping("/login")
+    public Response<MemberLoginResponseDTO> login(
+            @RequestBody MemberLoginRequestDTO memberLoginRequestDTO,
+            HttpSession session) { // 세션 주입
+
+        MemberLoginResponseDTO memberLoginResponseDTO = memberService.login(memberLoginRequestDTO);
+
         if (memberLoginResponseDTO.getStatusCode() == 401) {
             return Response.error(memberLoginResponseDTO);
         }
-        // 로그인 성공 시
-        return Response.success(memberLoginResponseDTO);
 
-        // MemberService에서 받은 MemberResponseDTO를 클라이언트에 보낸다.
+        // 로그인 성공 시 실제 사용자 객체(Member)를 세션에 저장
+        // 이메일로 `Member` 객체를 찾고, 세션에 저장
+        Member member = memberService.findByEmail(memberLoginResponseDTO.getEmail());
+        session.setAttribute("loginUser", member); // 전체 객체 저장
+
+        return Response.success(memberLoginResponseDTO);
     }
 }
