@@ -7,12 +7,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-@Data
-@Entity
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor
-@Table(name = "member") // 테이블 이름 지정
+@Builder
+@Entity
+@Table(name = "member")
 public class Member {
 
     @Id
@@ -29,11 +30,11 @@ public class Member {
     @Column(name = "nickname")
     private String nickname;
 
-    @Column(name = "profileImage")
+    @Column(name = "profile_image") // Java에서는 일반적으로 camelCase(profileImage)를, DB에서는 snake_case(profile_image)를 사용
     private String profileImage;
 
     @CreationTimestamp // 생성 시 자동 시간 입력
-    @Column(name = "createdAt", updatable = false)
+    @Column(name = "updated_at", updatable = false)
     private LocalDateTime createdAt;
 
 }

@@ -81,6 +81,11 @@ public class MemberService {
                 .email(member.getEmail())
                 .build();
     }
+
+    public Member findByEmail(String email) {
+        return (Member) memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + email));
+    }
     // 성공을 의미하는 http 상태코드 200, 로그인 성공 메시지, 로그인 id를 MemberResponse 객체에 담아 
     // MemberRestController에 돌려줌
 }
