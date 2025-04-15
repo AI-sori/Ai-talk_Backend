@@ -29,13 +29,31 @@ public class CommunityPostService {
         communityPostRepository.save(post);
     }
 
-    public CommunityPost getPostById(Long id) {
-        return communityPostRepository.findById(id)
+    // ✅ 단건 조회 후 DTO 변환
+    public CommunityPostResponseDTO getPostById(Long id) {
+        CommunityPost post = communityPostRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 게시글이 없습니다: " + id));
+
+        return convertToResponseDTO(post);
     }
 
-    // 페이징 처리
-    public Page<CommunityPost> getPosts(Pageable pageable) {
-        return communityPostRepository.findAll(pageable);
+    // ✅ 페이징 목록 조회 후 DTO 변환
+    public Page<CommunityPostResponseDTO> getPosts(Pageable pageable) {
+        return communityPostRepository.findAll(pageable)
+                .map(this::convertToResponseDTO);
+    }
+
+    // ✅ 변환 메서드
+    private CommunityPostResponseDTO convertToResponseDTO(CommunityPost post) {
+        String nickname = post.getMember() != null ? post.getMember().getNickname() : "알 수 없음";
+
+        return new CommunityPostResponseDTO(
+                post.getId(),
+                nickname,
+                post.getCategory(),
+                post.getTitle(),
+                post.getContent(),
+                post.getImage()
+        );
     }
 }

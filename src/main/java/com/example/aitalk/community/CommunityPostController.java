@@ -3,15 +3,9 @@ package com.example.aitalk.community;
 import com.example.aitalk.member.Member;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.*;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/community")
@@ -43,7 +37,7 @@ public class CommunityPostController {
 
     // 게시글 목록 조회 (페이징)
     @GetMapping
-    public ResponseEntity<Page<CommunityPost>> getPosts(
+    public ResponseEntity<Page<CommunityPostResponseDTO>> getPosts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -54,17 +48,19 @@ public class CommunityPostController {
                 : Sort.by(sortBy).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<CommunityPost> posts = communityPostService.getPosts(pageable);
+        Page<CommunityPostResponseDTO> posts = communityPostService.getPosts(pageable);
 
         return ResponseEntity.ok(posts);
     }
 
-    // 게시글 단건 조회
+    // ✅ 게시글 단건 조회 (DTO로 반환)
     @GetMapping("/{id}")
-    public ResponseEntity<CommunityPost> getPost(@PathVariable Long id) {
-        Optional<CommunityPost> post = Optional.ofNullable(communityPostService.getPostById(id));
-        return post.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<CommunityPostResponseDTO> getPost(@PathVariable Long id) {
+        try {
+            CommunityPostResponseDTO dto = communityPostService.getPostById(id);
+            return ResponseEntity.ok(dto);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
-
 }
