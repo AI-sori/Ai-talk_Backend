@@ -3,6 +3,8 @@ package com.example.aitalk.community;
 import com.example.aitalk.member.Member;
 import com.example.aitalk.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,4 +29,13 @@ public class CommunityPostService {
         communityPostRepository.save(post);
     }
 
+    public CommunityPost getPostById(Long id) {
+        return communityPostRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 게시글이 없습니다: " + id));
+    }
+
+    // 페이징 처리
+    public Page<CommunityPost> getPosts(Pageable pageable) {
+        return communityPostRepository.findAll(pageable);
+    }
 }
