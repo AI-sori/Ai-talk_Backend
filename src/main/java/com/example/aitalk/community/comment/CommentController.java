@@ -31,12 +31,12 @@ public class CommentController {
         return ResponseEntity.ok("댓글 등록 완료");
     }
 
-    // 댓글 목록 조회
-    @GetMapping("/comments/{postId}")
-    public ResponseEntity<List<CommentResponseDTO>> getComments(@PathVariable Long postId) {
-        List<CommentResponseDTO> comments = commentService.getComments(postId);
-        return ResponseEntity.ok(comments);
-    }
+//    // 댓글 목록 조회
+//    @GetMapping("/comments/{postId}")
+//    public ResponseEntity<List<CommentResponseDTO>> getComments(@PathVariable Long postId) {
+//        List<CommentResponseDTO> comments = commentService.getComments(postId);
+//        return ResponseEntity.ok(comments);
+//    }
 
     // 댓글 수정
     @PutMapping("/comments/{commentId}")

@@ -1,5 +1,8 @@
 package com.example.aitalk.community;
 
+import com.example.aitalk.community.comment.Comment;
+import com.example.aitalk.community.comment.CommentRepository;
+import com.example.aitalk.community.comment.CommentResponseDTO;
 import com.example.aitalk.member.Member;
 import com.example.aitalk.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -7,12 +10,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CommunityPostService {
 
     private final CommunityPostRepository communityPostRepository;
     private final MemberRepository memberRepository;
+
+    private final CommentRepository commentRepository; // ✅ 댓글 리포지토리 추가
 
     public void createPost(CommunityPostRequestDTO dto, Long userId) {
         // userId로 Member 객체를 조회
@@ -47,17 +54,28 @@ public class CommunityPostService {
     private CommunityPostResponseDTO convertToResponseDTO(CommunityPost post) {
         String nickname = post.getMember() != null ? post.getMember().getNickname() : "알 수 없음";
 
+        // ✅ 댓글 리스트 조회
+        List<Comment> comments = commentRepository.findByPostId(post.getId());
+        List<CommentResponseDTO> commentDTOs = comments.stream()
+                .map(comment -> new CommentResponseDTO(
+                        comment.getId(),
+                        comment.getContent(),
+                        comment.getMember().getNickname(),
+                        comment.getCreatedAt()
+                ))
+                .toList();
+
         return new CommunityPostResponseDTO(
                 post.getId(),
                 nickname,
                 post.getCategory(),
                 post.getTitle(),
                 post.getContent(),
-                post.getImage()
+                post.getImage(),
+                commentDTOs // ✅ 댓글 추가
         );
     }
 
-    // 게시글 수정
     public void updatePost(Long postId, CommunityPostRequestDTO dto, Long userId) {
         CommunityPost post = communityPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));

@@ -1,7 +1,10 @@
 package com.example.aitalk.community;
 
+import com.example.aitalk.community.comment.CommentResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -12,4 +15,8 @@ public class CommunityPostResponseDTO {
     private String title;
     private String content;
     private String image;
+
+    // 댓글 리스트 추가
+    private List<CommentResponseDTO> comments;
+
 }
