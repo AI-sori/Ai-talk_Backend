@@ -39,7 +39,7 @@ public class CommunityPostController {
     @GetMapping
     public ResponseEntity<Page<CommunityPostResponseDTO>> getPosts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "desc") String direction
     ) {
@@ -61,6 +61,50 @@ public class CommunityPostController {
             return ResponseEntity.ok(dto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+    // 게시글 수정
+    @PutMapping("/post/{id}")
+    public ResponseEntity<String> updatePost(
+            @PathVariable Long id,
+            @RequestBody CommunityPostRequestDTO dto,
+            HttpSession session
+    ) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+
+        if (loginUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+        }
+
+        try {
+            communityPostService.updatePost(id, dto, loginUser.getId());
+            return ResponseEntity.ok("게시글 수정 완료");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("작성자만 수정할 수 있습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("게시글 수정 실패: " + e.getMessage());
+        }
+    }
+
+    // 게시글 삭제
+    @DeleteMapping("/post/{id}")
+    public ResponseEntity<String> deletePost(
+            @PathVariable Long id,
+            HttpSession session
+    ) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+
+        if (loginUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+        }
+
+        try {
+            communityPostService.deletePost(id, loginUser.getId());
+            return ResponseEntity.ok("게시글 삭제 완료");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("작성자만 삭제할 수 있습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("게시글 삭제 실패: " + e.getMessage());
         }
     }
 }

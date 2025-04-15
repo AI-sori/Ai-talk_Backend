@@ -56,4 +56,33 @@ public class CommunityPostService {
                 post.getImage()
         );
     }
+
+    // 게시글 수정
+    public void updatePost(Long postId, CommunityPostRequestDTO dto, Long userId) {
+        CommunityPost post = communityPostRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+
+        if (!post.getMember().getId().equals(userId)) {
+            throw new IllegalArgumentException("작성자만 수정할 수 있습니다.");
+        }
+
+        post.setCategory(dto.getCategory());
+        post.setTitle(dto.getTitle());
+        post.setContent(dto.getContent());
+        post.setImage(dto.getImage());
+
+        communityPostRepository.save(post);
+    }
+
+    // 게시글 삭제
+    public void deletePost(Long postId, Long userId) {
+        CommunityPost post = communityPostRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+
+        if (!post.getMember().getId().equals(userId)) {
+            throw new IllegalArgumentException("작성자만 삭제할 수 있습니다.");
+        }
+
+        communityPostRepository.delete(post);
+    }
 }
