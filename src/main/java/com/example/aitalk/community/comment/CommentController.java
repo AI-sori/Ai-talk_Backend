@@ -51,8 +51,12 @@ public class CommentController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
         }
 
-        commentService.updateComment(commentId, dto.getContent(), loginUser.getId());
-        return ResponseEntity.ok("댓글 수정 완료");
+        try {
+            commentService.updateComment(commentId, dto.getContent(), loginUser.getId());
+            return ResponseEntity.ok("댓글 수정 완료");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     // 댓글 삭제
@@ -67,7 +71,11 @@ public class CommentController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
         }
 
-        commentService.deleteComment(commentId, loginUser.getId());
-        return ResponseEntity.ok("댓글 삭제 완료");
+        try {
+            commentService.deleteComment(commentId, loginUser.getId());
+            return ResponseEntity.ok("댓글 삭제 완료");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }
