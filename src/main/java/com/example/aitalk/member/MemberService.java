@@ -88,4 +88,21 @@ public class MemberService {
     }
     // 성공을 의미하는 http 상태코드 200, 로그인 성공 메시지, 로그인 id를 MemberResponse 객체에 담아 
     // MemberRestController에 돌려줌
+
+
+    // 프로필 조회
+    public MemberProfileResponseDTO getProfile(Member member) {
+        return MemberProfileResponseDTO.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .profileImage(member.getProfileImage())
+                .build();
+    }
+
+    // 프로필 수정
+    @Transactional
+    public void updateProfile(Member member, MemberProfileUpdateRequestDTO requestDTO) {
+        member.setNickname(requestDTO.getNickname());
+        member.setProfileImage(requestDTO.getProfileImage());
+    }
 }

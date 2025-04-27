@@ -5,10 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor // 모든 필드를 초기화하는 생성자 자동 생성 (의존성 주입)
@@ -51,5 +48,23 @@ public class MemberController {
         session.setAttribute("loginUser", member); // 전체 객체 저장
 
         return Response.success(memberLoginResponseDTO);
+    }
+
+
+    /* 프로필 조회 */
+    @GetMapping("/profile")
+    public Response<MemberProfileResponseDTO> getProfile(@SessionAttribute("loginUser") Member member) {
+        MemberProfileResponseDTO profile = memberService.getProfile(member);
+        return Response.success(profile);
+    }
+
+    /* 프로필 수정 */
+    @PutMapping("/profile")
+    public Response<String> updateProfile(
+            @SessionAttribute("loginUser") Member member,
+            @RequestBody @Valid MemberProfileUpdateRequestDTO updateRequestDTO) {
+
+        memberService.updateProfile(member, updateRequestDTO);
+        return Response.success("프로필이 성공적으로 수정되었습니다.");
     }
 }
