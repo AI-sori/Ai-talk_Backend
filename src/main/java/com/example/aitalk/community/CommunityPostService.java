@@ -72,8 +72,7 @@ public class CommunityPostService {
                 post.getCategory(),
                 post.getTitle(),
                 post.getContent(),
-                post.getImage(),
-                commentDTOs // ✅ 댓글 추가
+                post.getImage()
         );
     }
 
