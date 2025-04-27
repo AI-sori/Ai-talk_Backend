@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -102,5 +103,18 @@ public class CommunityPostService {
         }
 
         communityPostRepository.delete(post);
+    }
+
+    // 본인이 작성한 게시글 목록
+    public List<MyPagePostResponseDTO> getMyPosts(Member member) {
+        List<CommunityPost> posts = communityPostRepository.findByMember(member);
+        return posts.stream()
+                .map(post -> MyPagePostResponseDTO.builder()
+                        .postId(post.getId())
+                        .title(post.getTitle())
+                        .category(post.getCategory())
+                        .createdAt(post.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

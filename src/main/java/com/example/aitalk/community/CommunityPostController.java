@@ -1,11 +1,14 @@
 package com.example.aitalk.community;
 
 import com.example.aitalk.member.Member;
+import com.example.aitalk.security.Response;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/community")
@@ -106,5 +109,13 @@ public class CommunityPostController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("게시글 삭제 실패: " + e.getMessage());
         }
+    }
+
+    // 내가 쓴 게시글 목록 조회
+    @GetMapping("/my-posts")
+    public Response<List<MyPagePostResponseDTO>> getMyPosts(HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        List<MyPagePostResponseDTO> posts = communityPostService.getMyPosts(loginUser);
+        return Response.success(posts);
     }
 }
