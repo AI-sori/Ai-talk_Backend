@@ -42,7 +42,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth //우선은 인증없이 접근가능하게끔 모두 .permitAll()로 설정
-//                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/").permitAll()
                         .anyRequest().permitAll());
 
         // 세션 관리 정책 설정 -> 세션 인증을 사용하지 않고 JWT를 사용하여 인증하기 때문에 세션 불필요
