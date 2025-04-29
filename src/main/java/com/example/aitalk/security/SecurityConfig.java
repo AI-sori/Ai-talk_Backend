@@ -3,54 +3,45 @@ package com.example.aitalk.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-// Cannot resolve symbol 'AbstractHttpConfigurer' (Spring Security 6 이상을 사용할 때 발생)
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import static org.springframework.security.config.Customizer.withDefaults;
 
-import java.util.Arrays;
-
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final AuthenticationConfiguration authenticationConfiguration;
+
     @Bean
-    public static BCryptPasswordEncoder bCryptPasswordEncoder() {
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public AuthenticationManager authenticationManager() throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll()
-                        .anyRequest().permitAll()
-                );
+                .formLogin(form -> form.disable())
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
 
         return http.build();
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // 프론트 포트
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-        config.setAllowCredentials(true); // 쿠키 허용
-        config.setAllowedHeaders(Arrays.asList("*")); // 모든 헤더 허용
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
 }
