@@ -1,4 +1,4 @@
-package com.example.aitalk.security;
+package com.example.aitalk.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
