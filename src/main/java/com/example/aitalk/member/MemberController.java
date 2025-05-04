@@ -1,6 +1,7 @@
 package com.example.aitalk.member;
 
 import com.example.aitalk.security.Response;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -30,6 +31,9 @@ public class MemberController {
     }
 
     /* 로그인 */
+    @Operation(summary = "로그인", description = "이메일과 비밀번호를 사용해 로그인합니다.")
+    @ApiResponse(responseCode = "200", description = "로그인 성공")
+    @ApiResponse(responseCode = "401", description = "로그인 실패 (이메일 또는 비밀번호 불일치)")
 
     @PostMapping("/login")
     public Response<MemberLoginResponseDTO> login(
@@ -66,5 +70,21 @@ public class MemberController {
 
         memberService.updateProfile(member, updateRequestDTO);
         return Response.success("프로필이 성공적으로 수정되었습니다.");
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃", description = "현재 로그인한 사용자의 세션을 만료시킵니다.")
+    @ApiResponse(responseCode = "200", description = "로그아웃 성공")
+    @ApiResponse(responseCode = "400", description = "로그인된 사용자 없음")
+    public Response<String> logout(HttpSession session) {
+        // 세션에 로그인된 사용자 정보가 없을 경우
+        if (session.getAttribute("loginUser") == null) {
+            return Response.error("로그인된 사용자가 없습니다.");
+        }
+
+        // 세션 무효화 (전체 제거)
+        session.invalidate();
+
+        return Response.success("로그아웃 되었습니다.");
     }
 }
