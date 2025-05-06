@@ -1,7 +1,10 @@
 package com.example.aitalk.security;
 
+import com.example.aitalk.mypage.QnaResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
