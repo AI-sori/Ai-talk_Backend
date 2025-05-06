@@ -24,22 +24,25 @@ public class Qna {
     @JoinColumn(name = "member_id")
     private Member member;  // 문의한 사용자
 
+    public Qna() {}
+
     // 생성자 및 메서드들
-    public Qna(String title, String content, Long memberId) {
+    public Qna(String title, String content, Member member) {
         this.title = title;
         this.content = content;
-        this.member = new Member(memberId);
+        this.member = member;
     }
 
-    public Qna() {
-
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 
-    public void setReply(String reply) {
-        this.reply = reply;
+    public boolean isReplied() {
+        return reply != null && !reply.isBlank();
     }
 
-    public String getReply() {
-        return reply;
+    public Member getMember() {
+        return member;
     }
 }

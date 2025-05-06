@@ -1,6 +1,5 @@
 package com.example.aitalk.mypage;
 
-import com.example.aitalk.config.Response;
 import com.example.aitalk.member.Member;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ public class QnaController {
 
     private final QnaService qnaService;
 
-    // 문의사항 등록
     @PostMapping
     public ResponseEntity<String> createQna(@RequestBody QnaRequestDTO dto, HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
@@ -26,55 +24,56 @@ public class QnaController {
         }
 
         qnaService.createQna(dto, loginUser.getId());
-        return ResponseEntity.ok("문의사항 등록 완료");
+        return ResponseEntity.ok("문의사항 작성 완료");
     }
 
-    // 단건 조회
-    @GetMapping("/{qnaId}")
-    public ResponseEntity<QnaResponseDTO> getQna(@PathVariable Long qnaId) {
-        QnaResponseDTO dto = qnaService.getQna(qnaId);
-        return ResponseEntity.ok(dto);
+    @GetMapping
+    public ResponseEntity<List<QnaResponseDTO>> getMyQnas(HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return ResponseEntity.ok(qnaService.getMyQnas(loginUser));
     }
 
-    // 수정 (작성자만 가능, 답변 달리면 불가)
-    @PutMapping("/{qnaId}")
-    public ResponseEntity<String> updateQna(@PathVariable Long qnaId, @RequestBody QnaRequestDTO dto, HttpSession session) {
+    @GetMapping("/{id}")
+    public ResponseEntity<QnaResponseDTO> getQna(@PathVariable Long id) {
+        return ResponseEntity.ok(qnaService.getQna(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateQna(@PathVariable Long id, @RequestBody QnaRequestDTO dto, HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
         }
 
         try {
-            qnaService.updateQna(qnaId, dto, loginUser.getId());
+            qnaService.updateQna(id, dto, loginUser.getId());
             return ResponseEntity.ok("문의사항 수정 완료");
         } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
 
-    // 삭제 (작성자만 가능, 답변 달리면 불가)
-    @DeleteMapping("/{qnaId}")
-    public ResponseEntity<String> deleteQna(@PathVariable Long qnaId, HttpSession session) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteQna(@PathVariable Long id, HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
         }
 
         try {
-            qnaService.deleteQna(qnaId, loginUser.getId());
+            qnaService.deleteQna(id, loginUser.getId());
             return ResponseEntity.ok("문의사항 삭제 완료");
         } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
-    }
-
-    @GetMapping("/my-qna")
-    public ResponseEntity<?> getMyQnas(HttpSession session) {
-        Member loginUser = (Member) session.getAttribute("loginUser");
-        if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
-        }
-        return ResponseEntity.ok(qnaService.getMyQnas(loginUser.getId()));
     }
 }
 
