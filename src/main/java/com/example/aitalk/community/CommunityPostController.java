@@ -1,7 +1,7 @@
 package com.example.aitalk.community;
 
 import com.example.aitalk.member.Member;
-import com.example.aitalk.security.Response;
+import com.example.aitalk.config.Response;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
