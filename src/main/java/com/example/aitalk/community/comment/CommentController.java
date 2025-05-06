@@ -1,6 +1,7 @@
 package com.example.aitalk.community.comment;
 
 import com.example.aitalk.member.Member;
+import com.example.aitalk.security.Response;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
@@ -77,5 +78,13 @@ public class CommentController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    // 내가 쓴 댓글 목록 조회
+    @GetMapping("/my-comments")
+    public Response<List<MyPageCommentResponseDTO>> getMyComments(HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        List<MyPageCommentResponseDTO> comments = commentService.getMyComments(loginUser);
+        return Response.success(comments);
     }
 }

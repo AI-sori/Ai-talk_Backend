@@ -1,11 +1,14 @@
 package com.example.aitalk.community;
 
+import com.example.aitalk.community.like.Like;
 import com.example.aitalk.member.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -29,8 +32,11 @@ public class CommunityPost {
     private String image;
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public void setUserId(Long userId) {
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Like> likes = new ArrayList<>();
+
+    public int getLikeCount() {
+        return likes.size();
     }
 
-    // Getter/Setter 생성자 등
 }

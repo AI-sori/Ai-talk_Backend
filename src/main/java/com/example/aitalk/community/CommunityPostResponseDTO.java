@@ -16,7 +16,6 @@ public class CommunityPostResponseDTO {
     private String content;
     private String image;
 
-    // 댓글 리스트 추가
-    private List<CommentResponseDTO> comments;
+    private int likeCount;
 
 }

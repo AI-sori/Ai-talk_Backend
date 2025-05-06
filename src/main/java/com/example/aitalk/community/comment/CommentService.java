@@ -73,4 +73,17 @@ public class CommentService {
     public Comment getCommentById(Long commentId) {
         return commentRepository.findById(commentId).orElse(null);
     }
+
+    // 본인이 작성한 댓글 목록
+    public List<MyPageCommentResponseDTO> getMyComments(Member member) {
+        List<Comment> comments = commentRepository.findByMember(member);
+        return comments.stream()
+                .map(comment -> MyPageCommentResponseDTO.builder()
+                        .commentId(comment.getId())
+                        .postTitle(comment.getPost().getTitle()) // 댓글이 달린 게시글 제목
+                        .content(comment.getContent())
+                        .createdAt(comment.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

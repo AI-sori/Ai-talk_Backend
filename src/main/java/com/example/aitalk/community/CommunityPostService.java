@@ -3,6 +3,8 @@ package com.example.aitalk.community;
 import com.example.aitalk.community.comment.Comment;
 import com.example.aitalk.community.comment.CommentRepository;
 import com.example.aitalk.community.comment.CommentResponseDTO;
+import com.example.aitalk.community.like.Like;
+import com.example.aitalk.community.like.LikeRepository;
 import com.example.aitalk.member.Member;
 import com.example.aitalk.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -72,7 +75,7 @@ public class CommunityPostService {
                 post.getTitle(),
                 post.getContent(),
                 post.getImage(),
-                commentDTOs // ✅ 댓글 추가
+                post.getLikeCount()
         );
     }
 
@@ -102,5 +105,50 @@ public class CommunityPostService {
         }
 
         communityPostRepository.delete(post);
+    }
+
+    // 본인이 작성한 게시글 목록
+    public List<MyPagePostResponseDTO> getMyPosts(Member member) {
+        List<CommunityPost> posts = communityPostRepository.findByMember(member);
+        return posts.stream()
+                .map(post -> MyPagePostResponseDTO.builder()
+                        .postId(post.getId())
+                        .title(post.getTitle())
+                        .category(post.getCategory())
+                        .createdAt(post.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+
+    private final LikeRepository likeRepository;
+
+    public void likePost(Long postId, Member member) {
+        CommunityPost post = communityPostRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+
+        if (likeRepository.existsByMemberAndPost(member, post)) {
+            throw new IllegalStateException("이미 좋아요를 눌렀습니다.");
+        }
+
+        likeRepository.save(new Like(member, post));
+    }
+
+    public void unlikePost(Long postId, Member member) {
+        CommunityPost post = communityPostRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+
+        Like like = likeRepository.findByMemberAndPost(member, post)
+                .orElseThrow(() -> new IllegalArgumentException("좋아요를 누르지 않았습니다."));
+
+        likeRepository.delete(like);
+    }
+
+    public List<CommunityPostResponseDTO> getLikedPosts(Member member) {
+        List<Like> likes = likeRepository.findByMember(member);
+        return likes.stream()
+                .map(Like::getPost)
+                .map(this::convertToResponseDTO)
+                .toList();
     }
 }
