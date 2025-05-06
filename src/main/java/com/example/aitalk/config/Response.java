@@ -1,4 +1,4 @@
-package com.example.aitalk.security;
+package com.example.aitalk.config;
 
 import com.example.aitalk.mypage.QnaResponseDTO;
 import lombok.AllArgsConstructor;

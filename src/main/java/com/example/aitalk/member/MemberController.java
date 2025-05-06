@@ -1,7 +1,7 @@
 package com.example.aitalk.member;
 
-import com.example.aitalk.security.Response;
 import io.swagger.v3.oas.annotations.Operation;
+import com.example.aitalk.config.Response;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
