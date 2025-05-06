@@ -15,12 +15,14 @@ public class QnaService {
     private final QnaRepository qnaRepository;
     private final MemberRepository memberRepository;
 
-    public void createQna(QnaRequestDTO dto, Long memberId) {
+    public QnaResponseDTO createQna(QnaRequestDTO dto, Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 멤버 없음"));
 
         Qna qna = new Qna(dto.getTitle(), dto.getContent(), member);
-        qnaRepository.save(qna);
+        Qna savedQna = qnaRepository.save(qna);
+
+        return new QnaResponseDTO(savedQna);
     }
 
     public List<QnaResponseDTO> getMyQnas(Member member) {

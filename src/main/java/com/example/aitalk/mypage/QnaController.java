@@ -17,14 +17,14 @@ public class QnaController {
     private final QnaService qnaService;
 
     @PostMapping
-    public ResponseEntity<String> createQna(@RequestBody QnaRequestDTO dto, HttpSession session) {
+    public ResponseEntity<QnaResponseDTO> createQna(@RequestBody QnaRequestDTO dto, HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        qnaService.createQna(dto, loginUser.getId());
-        return ResponseEntity.ok("문의사항 작성 완료");
+        QnaResponseDTO responseDto = qnaService.createQna(dto, loginUser.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @GetMapping
