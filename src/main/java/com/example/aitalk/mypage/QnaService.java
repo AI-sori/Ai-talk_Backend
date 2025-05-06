@@ -5,6 +5,7 @@ import com.example.aitalk.member.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class QnaService {
         return new QnaResponseDTO(qna);
     }
 
+    @Transactional
     public void updateQna(Long id, QnaRequestDTO dto, Long memberId) {
         Qna qna = qnaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("문의사항 없음"));

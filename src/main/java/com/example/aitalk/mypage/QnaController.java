@@ -43,19 +43,21 @@ public class QnaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateQna(@PathVariable Long id, @RequestBody QnaRequestDTO dto, HttpSession session) {
+    public ResponseEntity<Void> updateQna(
+            @PathVariable Long id,
+            @RequestBody QnaRequestDTO dto,
+            HttpSession session
+    ) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         try {
             qnaService.updateQna(id, dto, loginUser.getId());
-            return ResponseEntity.ok("문의사항 수정 완료");
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
