@@ -118,4 +118,42 @@ public class CommunityPostController {
         List<MyPagePostResponseDTO> posts = communityPostService.getMyPosts(loginUser);
         return Response.success(posts);
     }
+
+    // 좋아요 기능
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<String> likePost(@PathVariable Long postId, HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+
+        try {
+            communityPostService.likePost(postId, loginUser);
+            return ResponseEntity.ok("좋아요 완료");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{postId}/like")
+    public ResponseEntity<String> unlikePost(@PathVariable Long postId, HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+
+        try {
+            communityPostService.unlikePost(postId, loginUser);
+            return ResponseEntity.ok("좋아요 취소 완료");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/my-likes")
+    public ResponseEntity<List<CommunityPostResponseDTO>> getMyLikedPosts(HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        List<CommunityPostResponseDTO> likedPosts = communityPostService.getLikedPosts(loginUser);
+        return ResponseEntity.ok(likedPosts);
+    }
 }
