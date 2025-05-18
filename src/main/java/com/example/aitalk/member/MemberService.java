@@ -1,6 +1,5 @@
 package com.example.aitalk.member;
 
-import com.example.aitalk.member.*;
 import com.example.aitalk.s3.S3Uploader;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
