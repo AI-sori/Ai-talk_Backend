@@ -1,11 +1,14 @@
 package com.example.aitalk.member;
 
 import com.example.aitalk.member.*;
+import com.example.aitalk.s3.S3Uploader;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -16,31 +19,35 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    /* 회원가입 */
-    public MemberJoinResponseDTO join(MemberJoinRequestDTO memberJoinRequestDTO){
+    private final S3Uploader s3Uploader;
 
-        // 빌더 패턴을 사용하여 응답 객체 초기화
+    /* 회원가입 */
+    public MemberJoinResponseDTO join(MemberJoinRequestDTO memberJoinRequestDTO) throws IOException {
+
         MemberJoinResponseDTO.MemberJoinResponseDTOBuilder responseBuilder = MemberJoinResponseDTO.builder();
 
-        if(memberRepository.findMemberByEmail(memberJoinRequestDTO.getEmail()).isPresent()){
+        if (memberRepository.findMemberByEmail(memberJoinRequestDTO.getEmail()).isPresent()) {
             return responseBuilder
                     .statusCode(401)
                     .message("이미 가입된 회원입니다.")
                     .build();
         }
 
-        // 새로운 회원 정보 생성 및 저장
+        String imageUrl = null;
+        if (memberJoinRequestDTO.getProfileImage() != null && !memberJoinRequestDTO.getProfileImage().isEmpty()) {
+            imageUrl = s3Uploader.upload(memberJoinRequestDTO.getProfileImage(), "profile-images");
+        }
+
         Member member = Member.builder()
                 .email(memberJoinRequestDTO.getEmail())
                 .password(bCryptPasswordEncoder.encode(memberJoinRequestDTO.getPassword()))
                 .nickname(memberJoinRequestDTO.getNickname())
-                .profileImage(memberJoinRequestDTO.getProfileImage())
+                .profileImage(imageUrl)  // 업로드된 이미지 URL 저장
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        memberRepository.save(member); // DB에 회원 정보 저장
+        memberRepository.save(member);
 
-        // 회원가입 성공 응답 반환
         return responseBuilder
                 .statusCode(200)
                 .email(member.getEmail())
@@ -99,10 +106,15 @@ public class MemberService {
                 .build();
     }
 
-    // 프로필 수정
+    // 프로필 수정 (MultipartFile 버전)
     @Transactional
-    public void updateProfile(Member member, MemberProfileUpdateRequestDTO requestDTO) {
+    public void updateProfile(Member member, MemberProfileUpdateRequestDTO requestDTO) throws IOException {
         member.setNickname(requestDTO.getNickname());
-        member.setProfileImage(requestDTO.getProfileImage());
+
+        MultipartFile imageFile = requestDTO.getProfileImage();
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String imageUrl = s3Uploader.upload(imageFile, "profile-images");
+            member.setProfileImage(imageUrl);
+        }
     }
 }

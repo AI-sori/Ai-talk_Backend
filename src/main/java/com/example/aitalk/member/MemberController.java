@@ -7,6 +7,9 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @AllArgsConstructor // 모든 필드를 초기화하는 생성자 자동 생성 (의존성 주입)
@@ -18,18 +21,14 @@ public class MemberController {
     @PostMapping("/join")
     @ApiResponse(responseCode = "200", description = "성공")
     @ApiResponse(responseCode = "401", description = "이미 가입된 회원")
-    public Response<MemberJoinResponseDTO> join(@RequestBody @Valid MemberJoinRequestDTO memberJoinRequestDTO) {
-        // 회원가입 서비스 호출
-        MemberJoinResponseDTO memberJoinResponseDTO = memberService.join(memberJoinRequestDTO);
+    public Response<MemberJoinResponseDTO> join(@ModelAttribute @Valid MemberJoinRequestDTO memberJoinRequestDTO) throws IOException {
+        MemberJoinResponseDTO response = memberService.join(memberJoinRequestDTO);
 
-        // 회원가입 실패 시 (이미 가입된 회원)
-        if (memberJoinResponseDTO.getStatusCode() == 401) {
-            return Response.error(memberJoinResponseDTO); // ✅ DTO 전체 반환 가능
+        if (response.getStatusCode() == 401) {
+            return Response.error(response);
         }
-        // 회원가입 성공 시
-        return Response.success(memberJoinResponseDTO);
+        return Response.success(response);
     }
-
     /* 로그인 */
     @Operation(summary = "로그인", description = "이메일과 비밀번호를 사용해 로그인합니다.")
     @ApiResponse(responseCode = "200", description = "로그인 성공")
@@ -66,7 +65,7 @@ public class MemberController {
     @PutMapping("/profile")
     public Response<String> updateProfile(
             @SessionAttribute("loginUser") Member member,
-            @RequestBody @Valid MemberProfileUpdateRequestDTO updateRequestDTO) {
+            @ModelAttribute @Valid MemberProfileUpdateRequestDTO updateRequestDTO) throws IOException {
 
         memberService.updateProfile(member, updateRequestDTO);
         return Response.success("프로필이 성공적으로 수정되었습니다.");
