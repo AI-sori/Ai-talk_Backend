@@ -18,7 +18,7 @@ public class CommunityPostController {
     private final CommunityPostService communityPostService;
 
     @PostMapping("/post")
-    public ResponseEntity<String> createPost(@RequestBody CommunityPostRequestDTO dto, HttpSession session) {
+    public ResponseEntity<String> createPost(@ModelAttribute CommunityPostRequestDTO dto, HttpSession session) {
         // 세션에서 로그인된 사용자 꺼내기
         Member loginUser = (Member) session.getAttribute("loginUser");
 
@@ -70,7 +70,7 @@ public class CommunityPostController {
     @PutMapping("/post/{id}")
     public ResponseEntity<String> updatePost(
             @PathVariable Long id,
-            @RequestBody CommunityPostRequestDTO dto,
+            @ModelAttribute CommunityPostRequestDTO dto,
             HttpSession session
     ) {
         Member loginUser = (Member) session.getAttribute("loginUser");

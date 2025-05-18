@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Getter
@@ -23,5 +24,6 @@ public class MemberJoinRequestDTO {
 
     private String nickname; // 닉네임 (NULL 허용, VARCHAR(255))
 
-    private String profileImage; // 프로필 사진 URL (NULL 허용, VARCHAR(255))
+    private MultipartFile profileImage;  // 이미지 파일 필드 추가
+
 }

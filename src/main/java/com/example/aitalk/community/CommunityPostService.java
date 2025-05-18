@@ -7,11 +7,13 @@ import com.example.aitalk.community.like.Like;
 import com.example.aitalk.community.like.LikeRepository;
 import com.example.aitalk.member.Member;
 import com.example.aitalk.member.MemberRepository;
+import com.example.aitalk.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,9 +24,11 @@ public class CommunityPostService {
     private final CommunityPostRepository communityPostRepository;
     private final MemberRepository memberRepository;
 
-    private final CommentRepository commentRepository; // ✅ 댓글 리포지토리 추가
+    private final CommentRepository commentRepository;
 
-    public void createPost(CommunityPostRequestDTO dto, Long userId) {
+    private final S3Uploader s3Uploader;
+
+    public void createPost(CommunityPostRequestDTO dto, Long userId) throws IOException {
         // userId로 Member 객체를 조회
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
@@ -34,7 +38,11 @@ public class CommunityPostService {
         post.setCategory(dto.getCategory());
         post.setTitle(dto.getTitle());
         post.setContent(dto.getContent());
-        post.setImage(dto.getImage());
+
+        if (dto.getImage() != null && !dto.getImage().isEmpty()) {
+            String imageUrl = s3Uploader.upload(dto.getImage());
+            post.setImage(imageUrl);
+        }
 
         communityPostRepository.save(post);
     }
@@ -79,7 +87,7 @@ public class CommunityPostService {
         );
     }
 
-    public void updatePost(Long postId, CommunityPostRequestDTO dto, Long userId) {
+    public void updatePost(Long postId, CommunityPostRequestDTO dto, Long userId) throws IOException {
         CommunityPost post = communityPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
@@ -90,7 +98,10 @@ public class CommunityPostService {
         post.setCategory(dto.getCategory());
         post.setTitle(dto.getTitle());
         post.setContent(dto.getContent());
-        post.setImage(dto.getImage());
+        if (dto.getImage() != null && !dto.getImage().isEmpty()) {
+            String imageUrl = s3Uploader.upload(dto.getImage());
+            post.setImage(imageUrl);
+        }
 
         communityPostRepository.save(post);
     }
