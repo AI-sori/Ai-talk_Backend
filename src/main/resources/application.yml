@@ -11,7 +11,7 @@ spring:
     password: ${DB_password} #암호
   jpa:
     hibernate:
-      ddl-auto: create #JPA 자동 테이블 생성
+      ddl-auto: update #JPA 자동 테이블 생성
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -26,3 +26,12 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     operations-sorter: method
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: ${AWS_bucket_name}
