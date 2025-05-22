@@ -83,7 +83,8 @@ public class CommunityPostService {
                 post.getTitle(),
                 post.getContent(),
                 post.getImage(),
-                post.getLikeCount()
+                post.getLikeCount(),
+                commentDTOs
         );
     }
 

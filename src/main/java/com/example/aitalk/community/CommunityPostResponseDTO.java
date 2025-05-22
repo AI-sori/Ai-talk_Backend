@@ -18,4 +18,6 @@ public class CommunityPostResponseDTO {
 
     private int likeCount;
 
+    private List<CommentResponseDTO> comments;
+
 }
