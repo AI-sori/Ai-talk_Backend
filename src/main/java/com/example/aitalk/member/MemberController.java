@@ -85,4 +85,21 @@ public class MemberController {
 
         return Response.success("로그아웃 되었습니다.");
     }
+
+    /* 회원 탈퇴 */
+    @DeleteMapping("/delete")
+    @Operation(summary = "회원 탈퇴", description = "로그인한 사용자의 계정을 삭제합니다.")
+    @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공")
+    @ApiResponse(responseCode = "400", description = "로그인된 사용자 없음")
+    public Response<String> delete(@SessionAttribute(name = "loginUser", required = false) Member member,
+                                     HttpSession session) {
+        if (member == null) {
+            return Response.error("로그인된 사용자가 없습니다.");
+        }
+
+        memberService.delete(member);
+        session.invalidate(); // 세션 만료
+
+        return Response.success("회원 탈퇴가 완료되었습니다.");
+    }
 }

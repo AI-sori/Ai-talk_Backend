@@ -116,4 +116,10 @@ public class MemberService {
             member.setProfileImage(imageUrl);
         }
     }
+
+    // 회원 탈퇴
+    @Transactional
+    public void delete(Member member) {
+        memberRepository.delete(member);
+    }
 }
