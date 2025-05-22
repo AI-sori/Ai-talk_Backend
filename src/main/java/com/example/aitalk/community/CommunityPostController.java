@@ -38,20 +38,12 @@ public class CommunityPostController {
     }
 
 
-    // 게시글 목록 조회 (페이징)
+    // 게시글 목록 조회
     @GetMapping
-    public ResponseEntity<Page<CommunityPostResponseDTO>> getPosts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction
-    ) {
-        Sort sort = direction.equalsIgnoreCase("desc")
-                ? Sort.by(sortBy).descending()
-                : Sort.by(sortBy).ascending();
+    public ResponseEntity<List<CommunityPostResponseDTO>> getPosts() {
+        Sort sort = Sort.by("id").descending(); // 기본 정렬 조건 (id 내림차순)
 
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<CommunityPostResponseDTO> posts = communityPostService.getPosts(pageable);
+        List<CommunityPostResponseDTO> posts = communityPostService.getAllPosts(sort);
 
         return ResponseEntity.ok(posts);
     }
