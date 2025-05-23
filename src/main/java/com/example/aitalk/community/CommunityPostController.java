@@ -40,19 +40,21 @@ public class CommunityPostController {
 
     // 게시글 목록 조회
     @GetMapping
-    public ResponseEntity<List<CommunityPostResponseDTO>> getPosts() {
+    public ResponseEntity<List<CommunityPostResponseListDTO>> getPosts() {
         Sort sort = Sort.by("id").descending(); // 기본 정렬 조건 (id 내림차순)
 
-        List<CommunityPostResponseDTO> posts = communityPostService.getAllPosts(sort);
+        List<CommunityPostResponseListDTO> posts = communityPostService.getAllPosts(sort);
 
         return ResponseEntity.ok(posts);
     }
 
     // ✅ 게시글 단건 조회 (DTO로 반환)
     @GetMapping("/{id}")
-    public ResponseEntity<CommunityPostResponseDTO> getPost(@PathVariable Long id) {
+    public ResponseEntity<CommunityPostResponseDTO> getPost(@PathVariable Long id, HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+
         try {
-            CommunityPostResponseDTO dto = communityPostService.getPostById(id);
+            CommunityPostResponseDTO dto = communityPostService.getPostById(id, loginUser);
             return ResponseEntity.ok(dto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -105,9 +107,9 @@ public class CommunityPostController {
 
     // 내가 쓴 게시글 목록 조회
     @GetMapping("/my-posts")
-    public Response<List<MyPagePostResponseDTO>> getMyPosts(HttpSession session) {
+    public Response<List<CommunityPostResponseListDTO>> getMyPosts(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
-        List<MyPagePostResponseDTO> posts = communityPostService.getMyPosts(loginUser);
+        List<CommunityPostResponseListDTO> posts = communityPostService.getMyPosts(loginUser);
         return Response.success(posts);
     }
 
@@ -139,13 +141,13 @@ public class CommunityPostController {
     }
 
     @GetMapping("/my-likes")
-    public ResponseEntity<List<CommunityPostResponseDTO>> getMyLikedPosts(HttpSession session) {
+    public ResponseEntity<List<CommunityPostResponseListDTO>> getMyLikedPosts(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        List<CommunityPostResponseDTO> likedPosts = communityPostService.getLikedPosts(loginUser);
+        List<CommunityPostResponseListDTO> likedPosts = communityPostService.getLikedPosts(loginUser);
         return ResponseEntity.ok(likedPosts);
     }
 }

@@ -1,6 +1,5 @@
 package com.example.aitalk.community;
 
-import com.example.aitalk.community.comment.Comment;
 import com.example.aitalk.community.comment.CommentRepository;
 import com.example.aitalk.community.comment.CommentResponseDTO;
 import com.example.aitalk.community.like.Like;
@@ -9,12 +8,11 @@ import com.example.aitalk.member.Member;
 import com.example.aitalk.member.MemberRepository;
 import com.example.aitalk.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,24 +47,46 @@ public class CommunityPostService {
     }
 
     // ✅ 단건 조회 후 DTO 변환
-    public CommunityPostResponseDTO getPostById(Long id) {
+    public CommunityPostResponseDTO getPostById(Long id, Member loginUser) {
         CommunityPost post = communityPostRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 게시글이 없습니다: " + id));
 
-        return convertToResponseDTO(post, true);
+        boolean liked = false;
+        if (loginUser != null) {
+            liked = likeRepository.existsByMemberAndPost(loginUser, post);
+        }
+
+        return convertToResponseDTO(post, true, liked);
     }
 
     // ✅ 페이징 목록 조회 후 DTO 변환
-    public List<CommunityPostResponseDTO> getAllPosts(Sort sort) {
+    public List<CommunityPostResponseListDTO> getAllPosts(Sort sort) {
         List<CommunityPost> postList = communityPostRepository.findAll(sort);
 
         return postList.stream()
-                .map(post -> convertToResponseDTO(post, false)) // 댓글 없이 변환
+                .map(post -> {
+                    int commentCount = commentRepository.countByPost(post);  // 댓글 수 조회
+                    return convertToListDTO(post, commentCount);              // 댓글 수만 포함
+                })
                 .toList();
+    }
+    private CommunityPostResponseListDTO convertToListDTO(CommunityPost post, int commentCount) {
+        String nickname = post.getMember() != null ? post.getMember().getNickname() : "알 수 없음";
+
+        return new CommunityPostResponseListDTO(
+                post.getId(),
+                nickname,
+                post.getCategory(),
+                post.getTitle(),
+                post.getContent(),
+                post.getImage(),
+                post.getLikeCount(),
+                commentCount
+        );
     }
 
     // ✅ 변환 메서드
-    private CommunityPostResponseDTO convertToResponseDTO(CommunityPost post, boolean includeComments) {
+    private CommunityPostResponseDTO convertToResponseDTO(CommunityPost post, boolean includeComments, boolean liked) {
         String nickname = post.getMember() != null ? post.getMember().getNickname() : "알 수 없음";
 
         List<CommentResponseDTO> commentDTOs = null;
@@ -89,7 +109,8 @@ public class CommunityPostService {
                 post.getContent(),
                 post.getImage(),
                 post.getLikeCount(),
-                commentDTOs
+                commentDTOs,
+                liked
         );
     }
 
@@ -126,17 +147,19 @@ public class CommunityPostService {
     }
 
     // 본인이 작성한 게시글 목록
-    public List<MyPagePostResponseDTO> getMyPosts(Member member) {
-        List<CommunityPost> posts = communityPostRepository.findByMember(member);
+    public List<CommunityPostResponseListDTO> getMyPosts(Member member) {
+        List<CommunityPost> posts = communityPostRepository.findByMember(member).stream()
+                .sorted(Comparator.comparing(CommunityPost::getId).reversed()) // ID 내림차순 정렬
+                .toList();
+
         return posts.stream()
-                .map(post -> MyPagePostResponseDTO.builder()
-                        .postId(post.getId())
-                        .title(post.getTitle())
-                        .category(post.getCategory())
-                        .createdAt(post.getCreatedAt())
-                        .build())
+                .map(post -> {
+                    int commentCount = commentRepository.countByPost(post);
+                    return convertToListDTO(post, commentCount);
+                })
                 .collect(Collectors.toList());
     }
+
 
 
     private final LikeRepository likeRepository;
@@ -162,11 +185,16 @@ public class CommunityPostService {
         likeRepository.delete(like);
     }
 
-    public List<CommunityPostResponseDTO> getLikedPosts(Member member) {
+    public List<CommunityPostResponseListDTO> getLikedPosts(Member member) {
         List<Like> likes = likeRepository.findByMember(member);
+
         return likes.stream()
                 .map(Like::getPost)
-                .map(post -> convertToResponseDTO(post, false)) // 댓글 제외
+                .sorted(Comparator.comparing(CommunityPost::getId).reversed())  // ID 기준 내림차순 정렬
+                .map(post -> {
+                    int commentCount = commentRepository.countByPost(post);     // 댓글 수 조회
+                    return convertToListDTO(post, commentCount);                // 리스트용 DTO로 변환
+                })
                 .toList();
     }
 }

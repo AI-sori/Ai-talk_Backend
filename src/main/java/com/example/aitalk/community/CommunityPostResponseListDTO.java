@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class CommunityPostResponseDTO {
+public class CommunityPostResponseListDTO {
     private Long postId;
     private String nickname;
     private String category;
@@ -18,8 +18,6 @@ public class CommunityPostResponseDTO {
 
     private int likeCount;
 
-    private List<CommentResponseDTO> comments;
-
-    private boolean liked;
+    private int commentCount;
 
 }
