@@ -2,6 +2,7 @@ package com.example.aitalk.community.comment;
 
 import com.example.aitalk.community.CommunityPost;
 import com.example.aitalk.community.CommunityPostRepository;
+import com.example.aitalk.community.CommunityPostResponseListDTO;
 import com.example.aitalk.member.Member;
 import com.example.aitalk.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -75,15 +76,26 @@ public class CommentService {
     }
 
     // 본인이 작성한 댓글 목록
-    public List<MyPageCommentResponseDTO> getMyComments(Member member) {
+    public List<CommunityPostResponseListDTO> getMyComments(Member member) {
         List<Comment> comments = commentRepository.findByMember(member);
+
         return comments.stream()
-                .map(comment -> MyPageCommentResponseDTO.builder()
-                        .commentId(comment.getId())
-                        .postTitle(comment.getPost().getTitle()) // 댓글이 달린 게시글 제목
-                        .content(comment.getContent())
-                        .createdAt(comment.getCreatedAt())
-                        .build())
+                .map(Comment::getPost)
+                .distinct()
+                .sorted((p1, p2) -> Long.compare(p2.getId(), p1.getId())) // ID 내림차순 정렬
+                .map(post -> {
+                    int commentCount = commentRepository.countByPost(post); // 댓글 수
+                    return new CommunityPostResponseListDTO(
+                            post.getId(),
+                            post.getMember() != null ? post.getMember().getNickname() : "알 수 없음",
+                            post.getCategory(),
+                            post.getTitle(),
+                            post.getContent(),
+                            post.getImage(),
+                            post.getLikeCount(),
+                            commentCount
+                    );
+                })
                 .collect(Collectors.toList());
     }
 }

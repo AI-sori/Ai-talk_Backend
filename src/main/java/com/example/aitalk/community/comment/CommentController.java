@@ -1,5 +1,6 @@
 package com.example.aitalk.community.comment;
 
+import com.example.aitalk.community.CommunityPostResponseListDTO;
 import com.example.aitalk.member.Member;
 import com.example.aitalk.config.Response;
 import jakarta.servlet.http.HttpSession;
@@ -82,9 +83,9 @@ public class CommentController {
 
     // 내가 쓴 댓글 목록 조회
     @GetMapping("/my-comments")
-    public Response<List<MyPageCommentResponseDTO>> getMyComments(HttpSession session) {
+    public Response<List<CommunityPostResponseListDTO>> getMyComments(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
-        List<MyPageCommentResponseDTO> comments = commentService.getMyComments(loginUser);
+        List<CommunityPostResponseListDTO> comments = commentService.getMyComments(loginUser);
         return Response.success(comments);
     }
 }
