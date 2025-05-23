@@ -20,4 +20,6 @@ public class CommunityPostResponseDTO {
 
     private List<CommentResponseDTO> comments;
 
+    private boolean liked;
+
 }

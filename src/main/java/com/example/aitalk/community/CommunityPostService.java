@@ -49,11 +49,16 @@ public class CommunityPostService {
     }
 
     // ✅ 단건 조회 후 DTO 변환
-    public CommunityPostResponseDTO getPostById(Long id) {
+    public CommunityPostResponseDTO getPostById(Long id, Member loginUser) {
         CommunityPost post = communityPostRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 게시글이 없습니다: " + id));
 
-        return convertToResponseDTO(post, true);
+        boolean liked = false;
+        if (loginUser != null) {
+            liked = likeRepository.existsByMemberAndPost(loginUser, post);
+        }
+
+        return convertToResponseDTO(post, true, liked);
     }
 
     // ✅ 페이징 목록 조회 후 DTO 변환
@@ -61,12 +66,12 @@ public class CommunityPostService {
         List<CommunityPost> postList = communityPostRepository.findAll(sort);
 
         return postList.stream()
-                .map(post -> convertToResponseDTO(post, false)) // 댓글 없이 변환
+                .map(post -> convertToResponseDTO(post, false, false)) // 댓글 없이 변환
                 .toList();
     }
 
     // ✅ 변환 메서드
-    private CommunityPostResponseDTO convertToResponseDTO(CommunityPost post, boolean includeComments) {
+    private CommunityPostResponseDTO convertToResponseDTO(CommunityPost post, boolean includeComments, boolean liked) {
         String nickname = post.getMember() != null ? post.getMember().getNickname() : "알 수 없음";
 
         List<CommentResponseDTO> commentDTOs = null;
@@ -89,7 +94,8 @@ public class CommunityPostService {
                 post.getContent(),
                 post.getImage(),
                 post.getLikeCount(),
-                commentDTOs
+                commentDTOs,
+                liked
         );
     }
 
@@ -166,7 +172,7 @@ public class CommunityPostService {
         List<Like> likes = likeRepository.findByMember(member);
         return likes.stream()
                 .map(Like::getPost)
-                .map(post -> convertToResponseDTO(post, false)) // 댓글 제외
+                .map(post -> convertToResponseDTO(post, false, false)) // 댓글 제외
                 .toList();
     }
 }

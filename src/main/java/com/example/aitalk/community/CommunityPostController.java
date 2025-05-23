@@ -50,9 +50,11 @@ public class CommunityPostController {
 
     // ✅ 게시글 단건 조회 (DTO로 반환)
     @GetMapping("/{id}")
-    public ResponseEntity<CommunityPostResponseDTO> getPost(@PathVariable Long id) {
+    public ResponseEntity<CommunityPostResponseDTO> getPost(@PathVariable Long id, HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+
         try {
-            CommunityPostResponseDTO dto = communityPostService.getPostById(id);
+            CommunityPostResponseDTO dto = communityPostService.getPostById(id, loginUser);
             return ResponseEntity.ok(dto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
