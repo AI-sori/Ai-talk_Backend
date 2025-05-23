@@ -146,17 +146,17 @@ public class CommunityPostService {
     }
 
     // 본인이 작성한 게시글 목록
-    public List<MyPagePostResponseDTO> getMyPosts(Member member) {
+    public List<CommunityPostResponseListDTO> getMyPosts(Member member) {
         List<CommunityPost> posts = communityPostRepository.findByMember(member);
+
         return posts.stream()
-                .map(post -> MyPagePostResponseDTO.builder()
-                        .postId(post.getId())
-                        .title(post.getTitle())
-                        .category(post.getCategory())
-                        .createdAt(post.getCreatedAt())
-                        .build())
+                .map(post -> {
+                    int commentCount = commentRepository.countByPost(post); // 댓글 수 조회
+                    return convertToListDTO(post, commentCount);            // 리스트용 DTO로 변환
+                })
                 .collect(Collectors.toList());
     }
+
 
 
     private final LikeRepository likeRepository;

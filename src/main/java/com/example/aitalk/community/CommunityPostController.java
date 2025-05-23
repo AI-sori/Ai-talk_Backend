@@ -107,9 +107,9 @@ public class CommunityPostController {
 
     // 내가 쓴 게시글 목록 조회
     @GetMapping("/my-posts")
-    public Response<List<MyPagePostResponseDTO>> getMyPosts(HttpSession session) {
+    public Response<List<CommunityPostResponseListDTO>> getMyPosts(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
-        List<MyPagePostResponseDTO> posts = communityPostService.getMyPosts(loginUser);
+        List<CommunityPostResponseListDTO> posts = communityPostService.getMyPosts(loginUser);
         return Response.success(posts);
     }
 
