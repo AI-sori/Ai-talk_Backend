@@ -1,6 +1,5 @@
 package com.example.aitalk.community;
 
-import com.example.aitalk.community.comment.Comment;
 import com.example.aitalk.community.comment.CommentRepository;
 import com.example.aitalk.community.comment.CommentResponseDTO;
 import com.example.aitalk.community.like.Like;
@@ -9,8 +8,6 @@ import com.example.aitalk.member.Member;
 import com.example.aitalk.member.MemberRepository;
 import com.example.aitalk.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -62,12 +59,29 @@ public class CommunityPostService {
     }
 
     // ✅ 페이징 목록 조회 후 DTO 변환
-    public List<CommunityPostResponseDTO> getAllPosts(Sort sort) {
+    public List<CommunityPostResponseListDTO> getAllPosts(Sort sort) {
         List<CommunityPost> postList = communityPostRepository.findAll(sort);
 
         return postList.stream()
-                .map(post -> convertToResponseDTO(post, false, false)) // 댓글 없이 변환
+                .map(post -> {
+                    int commentCount = commentRepository.countByPost(post);  // 댓글 수 조회
+                    return convertToListDTO(post, commentCount);              // 댓글 수만 포함
+                })
                 .toList();
+    }
+    private CommunityPostResponseListDTO convertToListDTO(CommunityPost post, int commentCount) {
+        String nickname = post.getMember() != null ? post.getMember().getNickname() : "알 수 없음";
+
+        return new CommunityPostResponseListDTO(
+                post.getId(),
+                nickname,
+                post.getCategory(),
+                post.getTitle(),
+                post.getContent(),
+                post.getImage(),
+                post.getLikeCount(),
+                commentCount
+        );
     }
 
     // ✅ 변환 메서드
@@ -168,11 +182,15 @@ public class CommunityPostService {
         likeRepository.delete(like);
     }
 
-    public List<CommunityPostResponseDTO> getLikedPosts(Member member) {
+    public List<CommunityPostResponseListDTO> getLikedPosts(Member member) {
         List<Like> likes = likeRepository.findByMember(member);
+
         return likes.stream()
                 .map(Like::getPost)
-                .map(post -> convertToResponseDTO(post, false, false)) // 댓글 제외
+                .map(post -> {
+                    int commentCount = commentRepository.countByPost(post);  // 댓글 수 조회
+                    return convertToListDTO(post, commentCount);             // 리스트용 DTO로 변환
+                })
                 .toList();
     }
 }

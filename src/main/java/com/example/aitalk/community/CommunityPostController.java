@@ -40,10 +40,10 @@ public class CommunityPostController {
 
     // 게시글 목록 조회
     @GetMapping
-    public ResponseEntity<List<CommunityPostResponseDTO>> getPosts() {
+    public ResponseEntity<List<CommunityPostResponseListDTO>> getPosts() {
         Sort sort = Sort.by("id").descending(); // 기본 정렬 조건 (id 내림차순)
 
-        List<CommunityPostResponseDTO> posts = communityPostService.getAllPosts(sort);
+        List<CommunityPostResponseListDTO> posts = communityPostService.getAllPosts(sort);
 
         return ResponseEntity.ok(posts);
     }
@@ -141,13 +141,13 @@ public class CommunityPostController {
     }
 
     @GetMapping("/my-likes")
-    public ResponseEntity<List<CommunityPostResponseDTO>> getMyLikedPosts(HttpSession session) {
+    public ResponseEntity<List<CommunityPostResponseListDTO>> getMyLikedPosts(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        List<CommunityPostResponseDTO> likedPosts = communityPostService.getLikedPosts(loginUser);
+        List<CommunityPostResponseListDTO> likedPosts = communityPostService.getLikedPosts(loginUser);
         return ResponseEntity.ok(likedPosts);
     }
 }
