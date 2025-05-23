@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -147,12 +148,14 @@ public class CommunityPostService {
 
     // 본인이 작성한 게시글 목록
     public List<CommunityPostResponseListDTO> getMyPosts(Member member) {
-        List<CommunityPost> posts = communityPostRepository.findByMember(member);
+        List<CommunityPost> posts = communityPostRepository.findByMember(member).stream()
+                .sorted(Comparator.comparing(CommunityPost::getId).reversed()) // ID 내림차순 정렬
+                .toList();
 
         return posts.stream()
                 .map(post -> {
-                    int commentCount = commentRepository.countByPost(post); // 댓글 수 조회
-                    return convertToListDTO(post, commentCount);            // 리스트용 DTO로 변환
+                    int commentCount = commentRepository.countByPost(post);
+                    return convertToListDTO(post, commentCount);
                 })
                 .collect(Collectors.toList());
     }
@@ -187,9 +190,10 @@ public class CommunityPostService {
 
         return likes.stream()
                 .map(Like::getPost)
+                .sorted(Comparator.comparing(CommunityPost::getId).reversed())  // ID 기준 내림차순 정렬
                 .map(post -> {
-                    int commentCount = commentRepository.countByPost(post);  // 댓글 수 조회
-                    return convertToListDTO(post, commentCount);             // 리스트용 DTO로 변환
+                    int commentCount = commentRepository.countByPost(post);     // 댓글 수 조회
+                    return convertToListDTO(post, commentCount);                // 리스트용 DTO로 변환
                 })
                 .toList();
     }
