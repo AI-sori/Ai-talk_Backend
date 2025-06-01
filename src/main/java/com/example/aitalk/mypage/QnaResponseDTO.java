@@ -10,14 +10,14 @@ public class QnaResponseDTO {
     private String title;
     private String content;
     private String reply;
-    private Long memberId;
+    private Long userId;
 
     public QnaResponseDTO(Qna qna) {
         this.id = qna.getId();
         this.title = qna.getTitle();
         this.content = qna.getContent();
         this.reply = qna.getReply();
-        this.memberId = qna.getMember().getId();
+        this.userId = qna.getMember().getId();
     }
 }
 

@@ -16,4 +16,5 @@ public class MemberLoginResponseDTO {
     String email; // 가입한 사용자 이메일
 
     String message; // 응답 메시지
+    Long userId;
 }

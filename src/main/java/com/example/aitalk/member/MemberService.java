@@ -85,6 +85,7 @@ public class MemberService {
                 .statusCode(200)
                 .message("로그인 성공")
                 .email(member.getEmail())
+                .userId(member.getId())
                 .build();
     }
 
