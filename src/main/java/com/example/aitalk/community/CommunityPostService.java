@@ -87,15 +87,18 @@ public class CommunityPostService {
 
     // ✅ 변환 메서드
     private CommunityPostResponseDTO convertToResponseDTO(CommunityPost post, boolean includeComments, boolean liked) {
-        String nickname = post.getMember() != null ? post.getMember().getNickname() : "알 수 없음";
+        Member writer = post.getMember();
+        String nickname = writer != null ? writer.getNickname() : "알 수 없음";
+        Long userId = writer != null ? writer.getId() : null;
 
         List<CommentResponseDTO> commentDTOs = null;
         if (includeComments) {
             commentDTOs = commentRepository.findByPostId(post.getId()).stream()
                     .map(comment -> new CommentResponseDTO(
                             comment.getId(),
-                            comment.getContent(),
                             comment.getMember().getNickname(),
+                            comment.getMember().getId(),
+                            comment.getContent(),
                             comment.getCreatedAt()
                     ))
                     .toList();
@@ -104,6 +107,7 @@ public class CommunityPostService {
         return new CommunityPostResponseDTO(
                 post.getId(),
                 nickname,
+                userId,
                 post.getCategory(),
                 post.getTitle(),
                 post.getContent(),
@@ -113,6 +117,7 @@ public class CommunityPostService {
                 liked
         );
     }
+
 
 
     public void updatePost(Long postId, CommunityPostRequestDTO dto, Long userId) throws IOException {

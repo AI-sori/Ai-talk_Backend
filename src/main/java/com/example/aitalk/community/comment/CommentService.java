@@ -41,6 +41,7 @@ public class CommentService {
                 .map(c -> new CommentResponseDTO(
                         c.getId(),
                         c.getMember().getNickname(),
+                        c.getMember().getId(),
                         c.getContent(),
                         c.getCreatedAt()
                 ))
