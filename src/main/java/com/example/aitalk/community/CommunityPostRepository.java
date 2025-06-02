@@ -13,12 +13,4 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
     List<CommunityPost> findByTitleContainingIgnoreCaseOrContentContainingIgnoreCaseOrderByIdDesc(
             String titleKeyword, String contentKeyword
     );
-
-    @Query("SELECT p FROM CommunityPost p " +
-            "WHERE (LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-            "OR LOWER(p.content) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
-            "AND LOWER(p.category) = LOWER(:category) " +
-            "ORDER BY p.id DESC")
-    List<CommunityPost> searchByKeywordAndCategory(@Param("keyword") String keyword,
-                                                   @Param("category") String category);
 }

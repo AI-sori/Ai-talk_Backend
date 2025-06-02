@@ -153,10 +153,9 @@ public class CommunityPostController {
 
     @GetMapping("/search")
     public ResponseEntity<List<CommunityPostResponseListDTO>> searchPosts(
-            @RequestParam("keyword") String keyword,
-            @RequestParam(value = "category", required = false) String category
+            @RequestParam("keyword") String keyword
     ) {
-        List<CommunityPostResponseListDTO> results = communityPostService.searchPosts(keyword, category);
+        List<CommunityPostResponseListDTO> results = communityPostService.searchPosts(keyword);
         return ResponseEntity.ok(results);
     }
 }

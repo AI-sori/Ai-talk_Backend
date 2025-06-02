@@ -203,15 +203,9 @@ public class CommunityPostService {
                 .toList();
     }
 
-    public List<CommunityPostResponseListDTO> searchPosts(String keyword, String category) {
-        List<CommunityPost> posts;
-
-        if (category != null && !category.isBlank()) {
-            posts = communityPostRepository.searchByKeywordAndCategory(keyword, category);
-        } else {
-            posts = communityPostRepository
-                    .findByTitleContainingIgnoreCaseOrContentContainingIgnoreCaseOrderByIdDesc(keyword, keyword);
-        }
+    public List<CommunityPostResponseListDTO> searchPosts(String keyword) {
+        List<CommunityPost> posts = communityPostRepository
+                .findByTitleContainingIgnoreCaseOrContentContainingIgnoreCaseOrderByIdDesc(keyword, keyword);
 
         return posts.stream()
                 .map(post -> {
