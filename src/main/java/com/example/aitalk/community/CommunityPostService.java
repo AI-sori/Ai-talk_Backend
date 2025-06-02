@@ -202,4 +202,16 @@ public class CommunityPostService {
                 })
                 .toList();
     }
+
+    public List<CommunityPostResponseListDTO> searchPosts(String keyword) {
+        List<CommunityPost> posts = communityPostRepository
+                .findByTitleContainingIgnoreCaseOrContentContainingIgnoreCaseOrderByIdDesc(keyword, keyword);
+
+        return posts.stream()
+                .map(post -> {
+                    int commentCount = commentRepository.countByPost(post);
+                    return convertToListDTO(post, commentCount);
+                })
+                .collect(Collectors.toList());
+    }
 }
