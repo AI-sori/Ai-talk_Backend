@@ -150,4 +150,13 @@ public class CommunityPostController {
         List<CommunityPostResponseListDTO> likedPosts = communityPostService.getLikedPosts(loginUser);
         return ResponseEntity.ok(likedPosts);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<CommunityPostResponseListDTO>> searchPosts(
+            @RequestParam("keyword") String keyword,
+            @RequestParam(value = "category", required = false) String category
+    ) {
+        List<CommunityPostResponseListDTO> results = communityPostService.searchPosts(keyword, category);
+        return ResponseEntity.ok(results);
+    }
 }

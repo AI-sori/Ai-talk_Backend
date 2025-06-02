@@ -202,4 +202,22 @@ public class CommunityPostService {
                 })
                 .toList();
     }
+
+    public List<CommunityPostResponseListDTO> searchPosts(String keyword, String category) {
+        List<CommunityPost> posts;
+
+        if (category != null && !category.isBlank()) {
+            posts = communityPostRepository.searchByKeywordAndCategory(keyword, category);
+        } else {
+            posts = communityPostRepository
+                    .findByTitleContainingIgnoreCaseOrContentContainingIgnoreCaseOrderByIdDesc(keyword, keyword);
+        }
+
+        return posts.stream()
+                .map(post -> {
+                    int commentCount = commentRepository.countByPost(post);
+                    return convertToListDTO(post, commentCount);
+                })
+                .collect(Collectors.toList());
+    }
 }
