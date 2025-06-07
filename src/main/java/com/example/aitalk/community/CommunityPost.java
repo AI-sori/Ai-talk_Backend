@@ -1,5 +1,6 @@
 package com.example.aitalk.community;
 
+import com.example.aitalk.community.comment.Comment;
 import com.example.aitalk.community.like.Like;
 import com.example.aitalk.member.Member;
 import jakarta.persistence.*;
@@ -38,5 +39,8 @@ public class CommunityPost {
     public int getLikeCount() {
         return likes.size();
     }
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
 }
