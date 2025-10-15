@@ -1,0 +1,15 @@
+package com.example.aitalk.domain.member;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface MemberRepository extends JpaRepository<Member, Long> {
+
+    /* 이미 있는 멤버인지 확인 */
+    Optional<Member> findMemberByEmail(String email);
+
+    Optional<Object> findByEmail(String email);
+}
