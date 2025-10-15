@@ -22,7 +22,7 @@ class GlobalExceptionHandler {
 	// [비즈니스 로직 오류 처리] 개발자가 의도적으로 던진 비즈니스 규칙 위반(예: 없는 회원 접근, 재고 부족)
 	@ExceptionHandler(BusinessException.class)
 	public ResponseEntity<CommonResponse<Void>> handleBusinessException(BusinessException ex) {
-		ErrorCode errorCode = ex.getFailCode();
+		ErrorCode errorCode = ex.getErrorCode();
 		logger.error("BusinessException: {}", errorCode.getMsg(), ex);
 		return ResponseUtil.fail(errorCode.getHttpStatus(), errorCode.getMsg());
 	}

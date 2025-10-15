@@ -15,6 +15,7 @@ public class CommonResponse<T> {
 	private String msg;
 	private T data;
 
+	// 실패 응답용 생성자 (data 없음)
 	public CommonResponse(int code, String msg) {
 		this.code = code;
 		this.msg = msg;
