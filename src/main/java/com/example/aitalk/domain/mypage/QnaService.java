@@ -1,5 +1,10 @@
 package com.example.aitalk.domain.mypage;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.aitalk.api.exception.BusinessException;
 import com.example.aitalk.api.exception.ErrorCode;
 import com.example.aitalk.domain.member.Member;
@@ -7,11 +12,6 @@ import com.example.aitalk.domain.mypage.dto.QnaRequestDTO;
 import com.example.aitalk.domain.mypage.dto.QnaResponseDTO;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

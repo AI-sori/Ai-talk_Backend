@@ -1,5 +1,14 @@
 package com.example.aitalk.domain.community.post;
 
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.aitalk.api.exception.BusinessException;
 import com.example.aitalk.api.exception.ErrorCode;
 import com.example.aitalk.domain.community.comment.CommentRepository;
@@ -14,15 +23,6 @@ import com.example.aitalk.domain.member.MemberRepository;
 import com.example.aitalk.infra.s3.S3Uploader;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

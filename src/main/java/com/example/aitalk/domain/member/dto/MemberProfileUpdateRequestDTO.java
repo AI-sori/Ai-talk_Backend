@@ -1,9 +1,9 @@
 package com.example.aitalk.domain.member.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter

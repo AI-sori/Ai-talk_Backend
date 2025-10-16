@@ -1,9 +1,14 @@
 package com.example.aitalk.domain.mypage;
 
-import jakarta.persistence.*;
-
 import com.example.aitalk.domain.member.Member;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 

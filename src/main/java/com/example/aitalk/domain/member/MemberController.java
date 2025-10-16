@@ -1,6 +1,17 @@
 package com.example.aitalk.domain.member;
 
-import io.swagger.v3.oas.annotations.Operation;
+import java.io.IOException;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.aitalk.api.dto.CommonResponse;
 import com.example.aitalk.domain.member.dto.MemberJoinRequestDTO;
@@ -9,16 +20,11 @@ import com.example.aitalk.domain.member.dto.MemberProfileResponseDTO;
 import com.example.aitalk.domain.member.dto.MemberProfileUpdateRequestDTO;
 import com.example.aitalk.global.util.ResponseUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @RestController
 @AllArgsConstructor

@@ -1,11 +1,11 @@
 package com.example.aitalk.domain.community.post.dto;
 
+import java.util.List;
+
 import com.example.aitalk.domain.community.comment.dto.CommentResponseDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.util.List;
 
 @Getter
 @AllArgsConstructor

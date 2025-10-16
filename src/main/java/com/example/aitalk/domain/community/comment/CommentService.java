@@ -1,5 +1,11 @@
 package com.example.aitalk.domain.community.comment;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.aitalk.api.exception.BusinessException;
 import com.example.aitalk.api.exception.ErrorCode;
 import com.example.aitalk.domain.community.comment.dto.CommentRequestDTO;
@@ -9,12 +15,6 @@ import com.example.aitalk.domain.community.post.dto.CommunityPostResponseListDTO
 import com.example.aitalk.domain.member.Member;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional

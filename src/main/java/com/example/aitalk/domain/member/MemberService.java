@@ -1,12 +1,7 @@
 package com.example.aitalk.domain.member;
 
-import com.example.aitalk.domain.member.dto.MemberJoinRequestDTO;
-import com.example.aitalk.domain.member.dto.MemberLoginRequestDTO;
-import com.example.aitalk.domain.member.dto.MemberProfileResponseDTO;
-import com.example.aitalk.domain.member.dto.MemberProfileUpdateRequestDTO;
-import com.example.aitalk.infra.s3.S3Uploader;
-
-import lombok.AllArgsConstructor;
+import java.io.IOException;
+import java.time.LocalDateTime;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,9 +10,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.aitalk.api.exception.BusinessException;
 import com.example.aitalk.api.exception.ErrorCode;
+import com.example.aitalk.domain.member.dto.MemberJoinRequestDTO;
+import com.example.aitalk.domain.member.dto.MemberLoginRequestDTO;
+import com.example.aitalk.domain.member.dto.MemberProfileResponseDTO;
+import com.example.aitalk.domain.member.dto.MemberProfileUpdateRequestDTO;
+import com.example.aitalk.infra.s3.S3Uploader;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor

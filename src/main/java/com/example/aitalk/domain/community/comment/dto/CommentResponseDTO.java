@@ -1,13 +1,11 @@
 package com.example.aitalk.domain.community.comment.dto;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-
-import com.example.aitalk.domain.community.comment.Comment;
 
 @Getter
 @Builder
