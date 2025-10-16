@@ -28,15 +28,19 @@ public enum ErrorCode {
 	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "COMMON-405", "잘못된 HTTP method 요청입니다."),
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON-500", "서버 내부 오류입니다."),
 
-	// 도메인별 //
-	// 좋아요 관련
+	/* 도메인별 */
+	// Like
 	ALREADY_LIKED(HttpStatus.BAD_REQUEST, "LIKE-400", "이미 좋아요를 누른 게시글입니다."),
 	NOT_LIKED(HttpStatus.BAD_REQUEST, "LIKE-401", "좋아요를 누르지 않은 게시글입니다."),
 
 	// Member
 	ALREADY_SIGNED_UP(HttpStatus.CONFLICT, "MBR-409", "이미 등록된 이메일 주소입니다."),
 	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "AUTH-401", "비밀번호가 일치하지 않습니다."),
-	IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INF-500", "프로필 이미지 업로드 중 오류가 발생했습니다.");
+	IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INF-500", "프로필 이미지 업로드 중 오류가 발생했습니다."),
+
+	// QnA
+	NOT_FOUND_QNA(HttpStatus.NOT_FOUND, "QNA-404", "해당 문의사항을 찾을 수 없습니다."),
+	ALREADY_REPLIED(HttpStatus.BAD_REQUEST, "QNA-400", "이미 답변이 완료된 문의사항은 수정/삭제할 수 없습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;

@@ -1,11 +1,13 @@
 package com.example.aitalk.domain.mypage;
 
+import com.example.aitalk.api.exception.BusinessException;
+import com.example.aitalk.api.exception.ErrorCode;
 import com.example.aitalk.domain.member.Member;
-import com.example.aitalk.domain.member.MemberRepository;
 import com.example.aitalk.domain.mypage.dto.QnaRequestDTO;
 import com.example.aitalk.domain.mypage.dto.QnaResponseDTO;
 
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,57 +17,54 @@ import java.util.List;
 @RequiredArgsConstructor
 public class QnaService {
 
-    private final QnaRepository qnaRepository;
-    private final MemberRepository memberRepository;
+	private final QnaRepository qnaRepository;
 
-    public QnaResponseDTO createQna(QnaRequestDTO dto, Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 멤버 없음"));
+	public void createQna(QnaRequestDTO dto, Member member) {
+		Qna qna = new Qna(dto.getTitle(), dto.getContent(), member);
+		qnaRepository.save(qna);
+	}
 
-        Qna qna = new Qna(dto.getTitle(), dto.getContent(), member);
-        Qna savedQna = qnaRepository.save(qna);
+	@Transactional(readOnly = true)
+	public List<QnaResponseDTO> getMyQnas(Member member) {
+		return qnaRepository.findByMember(member).stream().map(QnaResponseDTO::new).toList();
+	}
 
-        return new QnaResponseDTO(savedQna);
-    }
+	@Transactional(readOnly = true)
+	public QnaResponseDTO getQna(Long id) {
+		Qna qna = getQnaOrThrow(id);
+		return new QnaResponseDTO(qna);
+	}
 
-    public List<QnaResponseDTO> getMyQnas(Member member) {
-        return qnaRepository.findByMember(member).stream()
-                .map(QnaResponseDTO::new)
-                .toList();
-    }
+	@Transactional
+	public void updateQna(Long id, QnaRequestDTO dto, Long memberId) {
+		Qna qna = getQnaOrThrow(id);
+		validateQnaOwner(qna, memberId);
+		validateNotReplied(qna);
 
-    public QnaResponseDTO getQna(Long id) {
-        Qna qna = qnaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("문의사항 없음"));
-        return new QnaResponseDTO(qna);
-    }
+		qna.update(dto.getTitle(), dto.getContent());
+	}
 
-    @Transactional
-    public void updateQna(Long id, QnaRequestDTO dto, Long memberId) {
-        Qna qna = qnaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("문의사항 없음"));
+	public void deleteQna(Long id, Long memberId) {
+		Qna qna = getQnaOrThrow(id);
+		validateQnaOwner(qna, memberId);
+		validateNotReplied(qna);
 
-        if (!qna.getMember().getId().equals(memberId)) {
-            throw new IllegalArgumentException("작성자만 수정 가능");
-        }
-        if (qna.isReplied()) {
-            throw new IllegalStateException("답변이 등록된 문의는 수정 불가");
-        }
+		qnaRepository.delete(qna);
+	}
 
-        qna.update(dto.getTitle(), dto.getContent());
-    }
+	private Qna getQnaOrThrow(Long qnaId) {
+		return qnaRepository.findById(qnaId).orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_QNA));
+	}
 
-    public void deleteQna(Long id, Long memberId) {
-        Qna qna = qnaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("문의사항 없음"));
+	private void validateQnaOwner(Qna qna, Long userId) {
+		if (!qna.getMember().getId().equals(userId)) {
+			throw new BusinessException(ErrorCode.NO_PERMISSION);
+		}
+	}
 
-        if (!qna.getMember().getId().equals(memberId)) {
-            throw new IllegalArgumentException("작성자만 삭제 가능");
-        }
-        if (qna.isReplied()) {
-            throw new IllegalStateException("답변이 등록된 문의는 삭제 불가");
-        }
-
-        qnaRepository.delete(qna);
-    }
+	private void validateNotReplied(Qna qna) {
+		if (qna.isReplied()) {
+			throw new BusinessException(ErrorCode.ALREADY_REPLIED);
+		}
+	}
 }
