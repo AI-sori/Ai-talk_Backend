@@ -1,12 +1,13 @@
 package com.example.aitalk.domain.community.comment;
 
+import com.example.aitalk.api.dto.CommonResponse;
 import com.example.aitalk.domain.community.comment.dto.CommentRequestDTO;
 import com.example.aitalk.domain.community.post.dto.CommunityPostResponseListDTO;
 import com.example.aitalk.domain.member.Member;
-import com.example.aitalk.api.dto.Response;
+import com.example.aitalk.global.util.ResponseUtil;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,73 +21,64 @@ public class CommentController {
 
     // 댓글 생성
     @PostMapping("/comments")
-    public ResponseEntity<String> createComment(
-            @RequestBody CommentRequestDTO dto,
-            HttpSession session
+    public ResponseEntity<CommonResponse<Void>> createComment(
+        @RequestBody CommentRequestDTO dto,
+        HttpSession session
     ) {
         Member loginUser = (Member) session.getAttribute("loginUser");
 
-        if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
-        }
+        commentService.createComment(dto, loginUser != null ? loginUser.getId() : null);
 
-        commentService.createComment(dto, loginUser.getId());
-        return ResponseEntity.ok("댓글 등록 완료");
+        return ResponseUtil.success(null);
     }
 
-//    // 댓글 목록 조회
-//    @GetMapping("/comments/{postId}")
-//    public ResponseEntity<List<CommentResponseDTO>> getComments(@PathVariable Long postId) {
-//        List<CommentResponseDTO> comments = commentService.getComments(postId);
-//        return ResponseEntity.ok(comments);
-//    }
+   // 댓글 목록 조회
+    //    @GetMapping("/comments/{postId}")
+   // public ResponseEntity<CommonResponse<List<CommentResponseDTO>>> getComments(@PathVariable Long postId) {
+   //    List<CommentResponseDTO> comments = commentService.getComments(postId);
+   //    return ResponseUtil.success(comments); }
 
     // 댓글 수정
     @PutMapping("/comments/{commentId}")
-    public ResponseEntity<String> updateComment(
-            @PathVariable Long commentId,
-            @RequestBody CommentRequestDTO dto,
-            HttpSession session
+    public ResponseEntity<CommonResponse<Void>> updateComment(
+        @PathVariable Long commentId,
+        @RequestBody CommentRequestDTO dto,
+        HttpSession session
     ) {
         Member loginUser = (Member) session.getAttribute("loginUser");
 
-        if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
-        }
+        commentService.updateComment(
+            commentId,
+            dto.getContent(),
+            loginUser != null ? loginUser.getId() : null
+        );
 
-        try {
-            commentService.updateComment(commentId, dto.getContent(), loginUser.getId());
-            return ResponseEntity.ok("댓글 수정 완료");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        return ResponseUtil.success(null);
     }
 
     // 댓글 삭제
     @DeleteMapping("/comments/{commentId}")
-    public ResponseEntity<String> deleteComment(
-            @PathVariable Long commentId,
-            HttpSession session
+    public ResponseEntity<CommonResponse<Void>> deleteComment(
+        @PathVariable Long commentId,
+        HttpSession session
     ) {
         Member loginUser = (Member) session.getAttribute("loginUser");
 
-        if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
-        }
+        commentService.deleteComment(
+            commentId,
+            loginUser != null ? loginUser.getId() : null
+        );
 
-        try {
-            commentService.deleteComment(commentId, loginUser.getId());
-            return ResponseEntity.ok("댓글 삭제 완료");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        return ResponseUtil.success(null);
     }
 
     // 내가 쓴 댓글 목록 조회
     @GetMapping("/my-comments")
-    public Response<List<CommunityPostResponseListDTO>> getMyComments(HttpSession session) {
+    public ResponseEntity<CommonResponse<List<CommunityPostResponseListDTO>>> getMyComments(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
+
         List<CommunityPostResponseListDTO> comments = commentService.getMyComments(loginUser);
-        return Response.success(comments);
+
+        return ResponseUtil.success(comments);
     }
 }
