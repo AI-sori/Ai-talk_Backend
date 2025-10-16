@@ -1,4 +1,4 @@
-package com.example.aitalk.domain.member.dto.profile;
+package com.example.aitalk.domain.member.dto;
 
 import lombok.Getter;
 import lombok.Setter;

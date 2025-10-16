@@ -3,12 +3,10 @@ package com.example.aitalk.domain.member;
 import io.swagger.v3.oas.annotations.Operation;
 
 import com.example.aitalk.api.dto.CommonResponse;
-import com.example.aitalk.domain.member.dto.join.MemberJoinRequestDTO;
-import com.example.aitalk.domain.member.dto.join.MemberJoinResponseDTO;
-import com.example.aitalk.domain.member.dto.login.MemberLoginRequestDTO;
-import com.example.aitalk.domain.member.dto.login.MemberLoginResponseDTO;
-import com.example.aitalk.domain.member.dto.profile.MemberProfileResponseDTO;
-import com.example.aitalk.domain.member.dto.profile.MemberProfileUpdateRequestDTO;
+import com.example.aitalk.domain.member.dto.MemberJoinRequestDTO;
+import com.example.aitalk.domain.member.dto.MemberLoginRequestDTO;
+import com.example.aitalk.domain.member.dto.MemberProfileResponseDTO;
+import com.example.aitalk.domain.member.dto.MemberProfileUpdateRequestDTO;
 import com.example.aitalk.global.util.ResponseUtil;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@AllArgsConstructor // 모든 필드를 초기화하는 생성자 자동 생성 (의존성 주입)
+@AllArgsConstructor
 @RequestMapping("/members")
 public class MemberController {
     private final MemberService memberService;
@@ -32,10 +30,10 @@ public class MemberController {
     @PostMapping("/join")
     @ApiResponse(responseCode = "200", description = "성공")
     // @ApiResponse(responseCode = "401", description = "이미 가입된 회원")
-    public ResponseEntity<CommonResponse<MemberJoinResponseDTO>> join(@ModelAttribute @Valid MemberJoinRequestDTO memberJoinRequestDTO) throws IOException {
-        MemberJoinResponseDTO response = memberService.join(memberJoinRequestDTO);
+    public ResponseEntity<CommonResponse<Void>> join(@ModelAttribute @Valid MemberJoinRequestDTO memberJoinRequestDTO) throws IOException {
+        memberService.join(memberJoinRequestDTO);
 
-        return ResponseUtil.success(response);
+        return ResponseUtil.success(null);
     }
 
     // 로그인
@@ -43,16 +41,15 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "로그인 성공")
     // @ApiResponse(responseCode = "401", description = "로그인 실패 (이메일 또는 비밀번호 불일치)")
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse<MemberLoginResponseDTO>> login(
+    public ResponseEntity<CommonResponse<Void>> login(
         @RequestBody MemberLoginRequestDTO memberLoginRequestDTO,
         HttpSession session) { // 세션 관리를 위해 HttpSession 유지
 
-        MemberLoginResponseDTO memberLoginResponseDTO = memberService.login(memberLoginRequestDTO);
+        Member member = memberService.login(memberLoginRequestDTO);
 
-        Member member = memberService.findByEmail(memberLoginResponseDTO.getEmail());
         session.setAttribute("loginUser", member);
 
-        return ResponseUtil.success(memberLoginResponseDTO);
+        return ResponseUtil.success(null);
     }
 
 

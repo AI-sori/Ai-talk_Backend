@@ -1,11 +1,9 @@
 package com.example.aitalk.domain.member;
 
-import com.example.aitalk.domain.member.dto.join.MemberJoinRequestDTO;
-import com.example.aitalk.domain.member.dto.join.MemberJoinResponseDTO;
-import com.example.aitalk.domain.member.dto.login.MemberLoginRequestDTO;
-import com.example.aitalk.domain.member.dto.login.MemberLoginResponseDTO;
-import com.example.aitalk.domain.member.dto.profile.MemberProfileResponseDTO;
-import com.example.aitalk.domain.member.dto.profile.MemberProfileUpdateRequestDTO;
+import com.example.aitalk.domain.member.dto.MemberJoinRequestDTO;
+import com.example.aitalk.domain.member.dto.MemberLoginRequestDTO;
+import com.example.aitalk.domain.member.dto.MemberProfileResponseDTO;
+import com.example.aitalk.domain.member.dto.MemberProfileUpdateRequestDTO;
 import com.example.aitalk.infra.s3.S3Uploader;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,7 +25,7 @@ public class MemberService {
     private final S3Uploader s3Uploader;
 
     // 회원가입
-    public MemberJoinResponseDTO join(MemberJoinRequestDTO memberJoinRequestDTO) throws IOException {
+    public void join(MemberJoinRequestDTO memberJoinRequestDTO) throws IOException {
 
         if (memberRepository.findMemberByEmail(memberJoinRequestDTO.getEmail()).isPresent()) {
             throw new BusinessException(ErrorCode.ALREADY_SIGNED_UP);
@@ -51,31 +49,19 @@ public class MemberService {
             .build();
 
         memberRepository.save(member);
-
-        return MemberJoinResponseDTO.builder()
-            .email(member.getEmail())
-            .message("회원가입 성공")
-            .build();
     }
 
     // 로그인
-    public MemberLoginResponseDTO login(MemberLoginRequestDTO memberLoginRequestDTO) {
+    public Member login(MemberLoginRequestDTO memberLoginRequestDTO) {
 
-        Member member = getMemberByEmailOrThrow(memberLoginRequestDTO.getEmail());
+        Member member = memberRepository.findMemberByEmail(memberLoginRequestDTO.getEmail())
+            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         if(!bCryptPasswordEncoder.matches(memberLoginRequestDTO.getPassword(), member.getPassword())){
             throw new BusinessException(ErrorCode.INVALID_PASSWORD);
         }
 
-        return MemberLoginResponseDTO.builder()
-            .message("로그인 성공")
-            .email(member.getEmail())
-            .userId(member.getId())
-            .build();
-    }
-
-    public Member findByEmail(String email) {
-        return getMemberByEmailOrThrow(email);
+        return member;
     }
 
     // 프로필 조회
@@ -107,11 +93,5 @@ public class MemberService {
     @Transactional
     public void delete(Member member) {
         memberRepository.delete(member);
-    }
-
-    // Email로 Member 객체를 찾거나 예외를 던지기
-    private Member getMemberByEmailOrThrow(String email) {
-        return memberRepository.findMemberByEmail(email)
-            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 }
