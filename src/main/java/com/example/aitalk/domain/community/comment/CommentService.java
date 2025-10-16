@@ -26,14 +26,10 @@ public class CommentService {
 
     // 댓글 생성
     public void createComment(CommentRequestDTO dto, Long userId) {
-        if (userId == null) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
+        validateUserLoggedIn(userId);
 
-        Member member = memberRepository.findById(userId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
-        CommunityPost post = postRepository.findById(dto.getPostId())
-            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_POST));
+        Member member = getMemberOrThrow(userId);
+        CommunityPost post = getPostOrThrow(dto.getPostId());
 
         Comment comment = new Comment();
         comment.setPost(post);
@@ -44,31 +40,21 @@ public class CommentService {
     }
 
     // 댓글 조회
-    public List<CommentResponseDTO> getComments(Long postId) {
-        return commentRepository.findByPostId(postId)
-            .stream()
-            .map(c -> new CommentResponseDTO(
-                c.getId(),
-                c.getMember().getNickname(),
-                c.getMember().getId(),
-                c.getContent(),
-                c.getCreatedAt()
-            ))
-            .collect(Collectors.toList());
-    }
+    // public List<CommentResponseDTO> getComments(Long postId) {
+    //     getPostOrThrow(postId);
+    //     return commentRepository.findByPostId(postId)
+    //         .stream()
+    //         .map(CommentResponseDTO::new)
+    //         .collect(Collectors.toList());
+    // }
 
     // 댓글 수정
     public void updateComment(Long commentId, String newContent, Long userId) {
-        if (userId == null) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
+        validateUserLoggedIn(userId);
 
-        Comment comment = commentRepository.findById(commentId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_COMMENT));
+        Comment comment = getCommentOrThrow(commentId);
 
-        if (!comment.getMember().getId().equals(userId)) {
-            throw new BusinessException(ErrorCode.NO_PERMISSION);
-        }
+        validateCommentOwner(comment, userId);
 
         comment.setContent(newContent);
         commentRepository.save(comment);
@@ -76,16 +62,11 @@ public class CommentService {
 
     // 댓글 삭제
     public void deleteComment(Long commentId, Long userId) {
-        if (userId == null) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
+        validateUserLoggedIn(userId);
 
-        Comment comment = commentRepository.findById(commentId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_COMMENT));
+        Comment comment = getCommentOrThrow(commentId);
 
-        if (!comment.getMember().getId().equals(userId)) {
-            throw new BusinessException(ErrorCode.NO_PERMISSION);
-        }
+        validateCommentOwner(comment, userId);
 
         commentRepository.delete(comment);
     }
@@ -120,5 +101,37 @@ public class CommentService {
                 );
             })
             .collect(Collectors.toList());
+    }
+
+     // 사용자 인증(로그인) 유효성 검증
+    private void validateUserLoggedIn(Long userId) {
+        if (userId == null) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+    }
+
+    // ID를 통한 Member 엔티티 조회
+    private Member getMemberOrThrow(Long userId) {
+        return memberRepository.findById(userId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+   // ID를 통한 Comment 엔티티 조회
+    private Comment getCommentOrThrow(Long commentId) {
+        return commentRepository.findById(commentId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_COMMENT));
+    }
+
+    // ID를 통한 CommunityPost 엔티티 조회
+    private CommunityPost getPostOrThrow(Long postId) {
+        return postRepository.findById(postId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_POST));
+    }
+
+    // 댓글 작성자 권한 검증
+    private void validateCommentOwner(Comment comment, Long userId) {
+        if (!comment.getMember().getId().equals(userId)) {
+            throw new BusinessException(ErrorCode.NO_PERMISSION);
+        }
     }
 }
