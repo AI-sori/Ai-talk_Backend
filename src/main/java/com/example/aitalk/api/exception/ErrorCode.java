@@ -13,6 +13,10 @@ public enum ErrorCode {
 	// ----------------------
 	BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON-400", "잘못된 요청입니다. 요청 형식을 확인해주세요."),
 
+	// 좋아요 관련 오류 코드
+	ALREADY_LIKED(HttpStatus.BAD_REQUEST, "LIKE-400", "이미 좋아요를 누른 게시글입니다."),
+	NOT_LIKED(HttpStatus.BAD_REQUEST, "LIKE-401", "좋아요를 누르지 않은 게시글입니다."),
+
 	// 401 Unauthorized 계열 (인증 오류)
 	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH-401", "인증 정보가 유효하지 않습니다. 로그인이 필요합니다."),
 

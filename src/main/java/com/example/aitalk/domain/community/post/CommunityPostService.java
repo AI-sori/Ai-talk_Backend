@@ -1,5 +1,7 @@
 package com.example.aitalk.domain.community.post;
 
+import com.example.aitalk.api.exception.BusinessException;
+import com.example.aitalk.api.exception.ErrorCode;
 import com.example.aitalk.domain.community.comment.CommentRepository;
 import com.example.aitalk.domain.community.comment.dto.CommentResponseDTO;
 import com.example.aitalk.domain.community.like.Like;
@@ -10,9 +12,11 @@ import com.example.aitalk.domain.community.post.dto.CommunityPostResponseListDTO
 import com.example.aitalk.domain.member.Member;
 import com.example.aitalk.domain.member.MemberRepository;
 import com.example.aitalk.infra.s3.S3Uploader;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -25,18 +29,17 @@ public class CommunityPostService {
 
     private final CommunityPostRepository communityPostRepository;
     private final MemberRepository memberRepository;
-
     private final CommentRepository commentRepository;
-
+    private final LikeRepository likeRepository;
     private final S3Uploader s3Uploader;
 
     public void createPost(CommunityPostRequestDTO dto, Long userId) throws IOException {
         // userId로 Member 객체를 조회
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
+        validateUserLoggedIn(userId);
+        Member member = getMemberOrThrow(userId);
 
         CommunityPost post = new CommunityPost();
-        post.setMember(member); // ✅ 이제 Member 객체가 제대로 들어감
+        post.setMember(member);
         post.setCategory(dto.getCategory());
         post.setTitle(dto.getTitle());
         post.setContent(dto.getContent());
@@ -49,10 +52,10 @@ public class CommunityPostService {
         communityPostRepository.save(post);
     }
 
-    // ✅ 단건 조회 후 DTO 변환
+    // 단건 조회 후 DTO 변환
+    @Transactional(readOnly = true)
     public CommunityPostResponseDTO getPostById(Long id, Member loginUser) {
-        CommunityPost post = communityPostRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 게시글이 없습니다: " + id));
+        CommunityPost post = getPostOrThrow(id);
 
         boolean liked = false;
         if (loginUser != null) {
@@ -62,7 +65,7 @@ public class CommunityPostService {
         return convertToResponseDTO(post, true, liked);
     }
 
-    // ✅ 페이징 목록 조회 후 DTO 변환
+    // 페이징 목록 조회 후 DTO 변환
     public List<CommunityPostResponseListDTO> getAllPosts(Sort sort) {
         List<CommunityPost> postList = communityPostRepository.findAll(sort);
 
@@ -88,7 +91,7 @@ public class CommunityPostService {
         );
     }
 
-    // ✅ 변환 메서드
+    // 변환 메서드
     private CommunityPostResponseDTO convertToResponseDTO(CommunityPost post, boolean includeComments, boolean liked) {
         Member writer = post.getMember();
         String nickname = writer != null ? writer.getNickname() : "알 수 없음";
@@ -121,15 +124,13 @@ public class CommunityPostService {
         );
     }
 
-
-
+    // 게시글 수정
     public void updatePost(Long postId, CommunityPostRequestDTO dto, Long userId) throws IOException {
-        CommunityPost post = communityPostRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+        validateUserLoggedIn(userId);
 
-        if (!post.getMember().getId().equals(userId)) {
-            throw new IllegalArgumentException("작성자만 수정할 수 있습니다.");
-        }
+        CommunityPost post = getPostOrThrow(postId);
+
+        validatePostOwner(post, userId);
 
         post.setCategory(dto.getCategory());
         post.setTitle(dto.getTitle());
@@ -144,19 +145,22 @@ public class CommunityPostService {
 
     // 게시글 삭제
     public void deletePost(Long postId, Long userId) {
-        CommunityPost post = communityPostRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+        validateUserLoggedIn(userId);
 
-        if (!post.getMember().getId().equals(userId)) {
-            throw new IllegalArgumentException("작성자만 삭제할 수 있습니다.");
-        }
+        CommunityPost post = getPostOrThrow(postId);
+
+        validatePostOwner(post, userId);
 
         communityPostRepository.delete(post);
     }
 
     // 본인이 작성한 게시글 목록
+    @Transactional(readOnly = true)
     public List<CommunityPostResponseListDTO> getMyPosts(Member member) {
-        List<CommunityPost> posts = communityPostRepository.findByMember(member).stream()
+
+        Member logInMember = getLoggedInMemberOrThrow(member);
+
+        List<CommunityPost> posts = communityPostRepository.findByMember(logInMember).stream()
                 .sorted(Comparator.comparing(CommunityPost::getId).reversed()) // ID 내림차순 정렬
                 .toList();
 
@@ -168,33 +172,38 @@ public class CommunityPostService {
                 .collect(Collectors.toList());
     }
 
-
-
-    private final LikeRepository likeRepository;
-
+    // 좋아요 기능
     public void likePost(Long postId, Member member) {
-        CommunityPost post = communityPostRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
 
-        if (likeRepository.existsByMemberAndPost(member, post)) {
-            throw new IllegalStateException("이미 좋아요를 눌렀습니다.");
+        Member logInMember = getLoggedInMemberOrThrow(member);
+
+        CommunityPost post = getPostOrThrow(postId);
+
+        if (likeRepository.existsByMemberAndPost(logInMember, post)) {
+            throw new BusinessException(ErrorCode.ALREADY_LIKED);
         }
 
-        likeRepository.save(new Like(member, post));
+        likeRepository.save(new Like(logInMember, post));
     }
 
+    // 좋아요 취소
     public void unlikePost(Long postId, Member member) {
-        CommunityPost post = communityPostRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        Member logInMember = getLoggedInMemberOrThrow(member);
 
-        Like like = likeRepository.findByMemberAndPost(member, post)
-                .orElseThrow(() -> new IllegalArgumentException("좋아요를 누르지 않았습니다."));
+        CommunityPost post = getPostOrThrow(postId);
+
+        Like like = likeRepository.findByMemberAndPost(logInMember, post)
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_LIKED));
 
         likeRepository.delete(like);
     }
 
+    @Transactional(readOnly = true)
     public List<CommunityPostResponseListDTO> getLikedPosts(Member member) {
-        List<Like> likes = likeRepository.findByMember(member);
+
+        Member logInMember = getLoggedInMemberOrThrow(member);
+
+        List<Like> likes = likeRepository.findByMember(logInMember);
 
         return likes.stream()
                 .map(Like::getPost)
@@ -206,6 +215,7 @@ public class CommunityPostService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<CommunityPostResponseListDTO> searchPosts(String keyword) {
         List<CommunityPost> posts = communityPostRepository
                 .findByTitleContainingIgnoreCaseOrContentContainingIgnoreCaseOrderByIdDesc(keyword, keyword);
@@ -216,5 +226,39 @@ public class CommunityPostService {
                     return convertToListDTO(post, commentCount);
                 })
                 .collect(Collectors.toList());
+    }
+
+    // 사용자 인증(로그인) 유효성 검증
+    private void validateUserLoggedIn(Long userId) {
+        if (userId == null) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+    }
+
+    // ID를 통한 Member 엔티티 조회
+    private Member getMemberOrThrow(Long userId) {
+        return memberRepository.findById(userId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    // ID를 통한 CommunityPost 엔티티 조회
+    private CommunityPost getPostOrThrow(Long postId) {
+        return communityPostRepository.findById(postId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_POST));
+    }
+
+    // 작성자 권한 검증
+    private void validatePostOwner(CommunityPost post, Long userId) {
+        if (!post.getMember().getId().equals(userId)) {
+            throw new BusinessException(ErrorCode.NO_PERMISSION);
+        }
+    }
+
+    // Member 객체 기반 null 인증 검증
+    private Member getLoggedInMemberOrThrow(Member member) {
+        if (member == null) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+        return member;
     }
 }
