@@ -39,7 +39,8 @@ class GlobalExceptionHandler {
 
 	// [요청 본문 파싱 오류 처리] JSON 문법 오류 또는 타입 불일치 (400 Bad Request)
 	@ExceptionHandler(HttpMessageNotReadableException.class)
-	public ResponseEntity<CommonResponse<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+	public ResponseEntity<CommonResponse<Void>> handleHttpMessageNotReadableException(
+		HttpMessageNotReadableException ex) {
 		logger.error("HttpMessageNotReadableException: {}", ex.getMessage(), ex);
 		return ResponseUtil.fail(HttpStatus.BAD_REQUEST, ErrorCode.BAD_REQUEST.getMsg());
 	}
@@ -61,7 +62,8 @@ class GlobalExceptionHandler {
 
 	// [HTTP 메서드 오류 처리] 정의되지 않은 HTTP 메서드 사용 (405 Method Not Allowed)
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-	public ResponseEntity<CommonResponse<Void>> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
+	public ResponseEntity<CommonResponse<Void>> handleHttpRequestMethodNotSupportedException(
+		HttpRequestMethodNotSupportedException ex) {
 		logger.error("HttpRequestMethodNotSupportedException: {}", ex.getMessage(), ex);
 		return ResponseUtil.fail(HttpStatus.METHOD_NOT_ALLOWED, ErrorCode.METHOD_NOT_ALLOWED.getMsg());
 	}

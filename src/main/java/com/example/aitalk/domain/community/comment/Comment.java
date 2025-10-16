@@ -2,8 +2,10 @@ package com.example.aitalk.domain.community.comment;
 
 import com.example.aitalk.domain.community.post.CommunityPost;
 import com.example.aitalk.domain.member.Member;
+
 import jakarta.persistence.*;
 import lombok.*;
+
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -15,17 +17,18 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Comment {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private CommunityPost post;
+	@ManyToOne(fetch = FetchType.LAZY)
+	private CommunityPost post;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Member member;
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Member member;
 
-    private String content;
+	private String content;
 
-    @CreationTimestamp // 자동으로 생성 시간 저장
-    private LocalDateTime createdAt;
+	@CreationTimestamp // 자동으로 생성 시간 저장
+	private LocalDateTime createdAt;
 }

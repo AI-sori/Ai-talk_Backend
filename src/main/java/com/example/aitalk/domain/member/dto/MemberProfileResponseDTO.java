@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class MemberProfileResponseDTO {
-    private String email;
-    private String nickname;
-    private String profileImage;
+	private String email;
+	private String nickname;
+	private String profileImage;
 }

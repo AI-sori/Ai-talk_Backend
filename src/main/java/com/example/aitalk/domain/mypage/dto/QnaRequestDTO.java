@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class QnaRequestDTO {
-    private String title;
-    private String content;
+	private String title;
+	private String content;
 }

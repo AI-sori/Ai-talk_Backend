@@ -11,20 +11,20 @@ import java.util.List;
 @RequestMapping("/program")
 public class ProgramController {
 
-    private final ProgramRepository programRepo;
+	private final ProgramRepository programRepo;
 
-    public ProgramController(ProgramRepository programRepo) {
-        this.programRepo = programRepo;
-    }
+	public ProgramController(ProgramRepository programRepo) {
+		this.programRepo = programRepo;
+	}
 
-    // 전체 조회
-    @GetMapping
-    public List<Program> getAllPrograms() {
-        return programRepo.findAllByOrderByIdDesc(); // 내림차순 반환
-    }
+	// 전체 조회
+	@GetMapping
+	public List<Program> getAllPrograms() {
+		return programRepo.findAllByOrderByIdDesc(); // 내림차순 반환
+	}
 
-    @GetMapping("/{category}")
-    public List<Program> getProgramsByCategory(@PathVariable String category) {
-        return programRepo.findByCategoryOrderByIdDesc(category); // 카테고리별 + 내림차순
-    }
+	@GetMapping("/{category}")
+	public List<Program> getProgramsByCategory(@PathVariable String category) {
+		return programRepo.findByCategoryOrderByIdDesc(category); // 카테고리별 + 내림차순
+	}
 }

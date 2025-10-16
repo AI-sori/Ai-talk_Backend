@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import org.springframework.web.multipart.MultipartFile;
 
 @Data
@@ -14,16 +15,16 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class MemberJoinRequestDTO {
 
-    // 유효성 검사
-    @NotBlank(message = "이메일은 필수 입력 값입니다.")
-    @Email(message = "올바른 이메일 형식이어야 합니다.")
-    private String email; // 이메일 (VARCHAR(255), UNIQUE)
+	// 유효성 검사
+	@NotBlank(message = "이메일은 필수 입력 값입니다.")
+	@Email(message = "올바른 이메일 형식이어야 합니다.")
+	private String email; // 이메일 (VARCHAR(255), UNIQUE)
 
-    @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
-    private String password; // 비밀번호 (VARCHAR(255))
+	@NotBlank(message = "비밀번호는 필수 입력 값입니다.")
+	private String password; // 비밀번호 (VARCHAR(255))
 
-    private String nickname; // 닉네임 (NULL 허용, VARCHAR(255))
+	private String nickname; // 닉네임 (NULL 허용, VARCHAR(255))
 
-    private MultipartFile profileImage;  // 이미지 파일 필드 추가
+	private MultipartFile profileImage;  // 이미지 파일 필드 추가
 
 }

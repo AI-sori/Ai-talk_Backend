@@ -9,7 +9,8 @@ public class ResponseUtil {
 
 	// 성공 응답
 	public static <T> ResponseEntity<CommonResponse<T>> success(T data) {
-		return new ResponseEntity<>(new CommonResponse<>(HttpStatus.OK.value(), "요청이 성공적으로 처리되었습니다.", data), HttpStatus.OK);
+		return new ResponseEntity<>(new CommonResponse<>(HttpStatus.OK.value(), "요청이 성공적으로 처리되었습니다.", data),
+			HttpStatus.OK);
 	}
 
 	// 실패 응답

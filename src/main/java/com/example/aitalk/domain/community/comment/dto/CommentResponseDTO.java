@@ -14,10 +14,10 @@ import com.example.aitalk.domain.community.comment.Comment;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentResponseDTO {
-    private Long id;
-    private String nickname;
-    private Long userId;
-    private String content;
-    private LocalDateTime createdAt;
+	private Long id;
+	private String nickname;
+	private Long userId;
+	private String content;
+	private LocalDateTime createdAt;
 
 }
