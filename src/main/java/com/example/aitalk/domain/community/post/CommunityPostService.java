@@ -33,10 +33,7 @@ public class CommunityPostService {
     private final LikeRepository likeRepository;
     private final S3Uploader s3Uploader;
 
-    public void createPost(CommunityPostRequestDTO dto, Long userId) throws IOException {
-        // userId로 Member 객체를 조회
-        validateUserLoggedIn(userId);
-        Member member = getMemberOrThrow(userId);
+    public void createPost(CommunityPostRequestDTO dto, Member member) throws IOException {
 
         CommunityPost post = new CommunityPost();
         post.setMember(member);
@@ -125,12 +122,11 @@ public class CommunityPostService {
     }
 
     // 게시글 수정
-    public void updatePost(Long postId, CommunityPostRequestDTO dto, Long userId) throws IOException {
-        validateUserLoggedIn(userId);
+    public void updatePost(Long postId, CommunityPostRequestDTO dto, Member member) throws IOException {
 
         CommunityPost post = getPostOrThrow(postId);
 
-        validatePostOwner(post, userId);
+        validatePostOwner(post, member.getId());
 
         post.setCategory(dto.getCategory());
         post.setTitle(dto.getTitle());
@@ -144,12 +140,10 @@ public class CommunityPostService {
     }
 
     // 게시글 삭제
-    public void deletePost(Long postId, Long userId) {
-        validateUserLoggedIn(userId);
-
+    public void deletePost(Long postId, Member member) {
         CommunityPost post = getPostOrThrow(postId);
 
-        validatePostOwner(post, userId);
+        validatePostOwner(post, member.getId());
 
         communityPostRepository.delete(post);
     }
@@ -158,9 +152,7 @@ public class CommunityPostService {
     @Transactional(readOnly = true)
     public List<CommunityPostResponseListDTO> getMyPosts(Member member) {
 
-        Member logInMember = getLoggedInMemberOrThrow(member);
-
-        List<CommunityPost> posts = communityPostRepository.findByMember(logInMember).stream()
+        List<CommunityPost> posts = communityPostRepository.findByMember(member).stream()
                 .sorted(Comparator.comparing(CommunityPost::getId).reversed()) // ID 내림차순 정렬
                 .toList();
 
@@ -174,25 +166,20 @@ public class CommunityPostService {
 
     // 좋아요 기능
     public void likePost(Long postId, Member member) {
-
-        Member logInMember = getLoggedInMemberOrThrow(member);
-
         CommunityPost post = getPostOrThrow(postId);
 
-        if (likeRepository.existsByMemberAndPost(logInMember, post)) {
+        if (likeRepository.existsByMemberAndPost(member, post)) {
             throw new BusinessException(ErrorCode.ALREADY_LIKED);
         }
 
-        likeRepository.save(new Like(logInMember, post));
+        likeRepository.save(new Like(member, post));
     }
 
     // 좋아요 취소
     public void unlikePost(Long postId, Member member) {
-        Member logInMember = getLoggedInMemberOrThrow(member);
-
         CommunityPost post = getPostOrThrow(postId);
 
-        Like like = likeRepository.findByMemberAndPost(logInMember, post)
+        Like like = likeRepository.findByMemberAndPost(member, post)
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_LIKED));
 
         likeRepository.delete(like);
@@ -200,10 +187,7 @@ public class CommunityPostService {
 
     @Transactional(readOnly = true)
     public List<CommunityPostResponseListDTO> getLikedPosts(Member member) {
-
-        Member logInMember = getLoggedInMemberOrThrow(member);
-
-        List<Like> likes = likeRepository.findByMember(logInMember);
+        List<Like> likes = likeRepository.findByMember(member);
 
         return likes.stream()
                 .map(Like::getPost)
@@ -228,19 +212,6 @@ public class CommunityPostService {
                 .collect(Collectors.toList());
     }
 
-    // 사용자 인증(로그인) 유효성 검증
-    private void validateUserLoggedIn(Long userId) {
-        if (userId == null) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-    }
-
-    // ID를 통한 Member 엔티티 조회
-    private Member getMemberOrThrow(Long userId) {
-        return memberRepository.findById(userId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
-    }
-
     // ID를 통한 CommunityPost 엔티티 조회
     private CommunityPost getPostOrThrow(Long postId) {
         return communityPostRepository.findById(postId)
@@ -252,13 +223,5 @@ public class CommunityPostService {
         if (!post.getMember().getId().equals(userId)) {
             throw new BusinessException(ErrorCode.NO_PERMISSION);
         }
-    }
-
-    // Member 객체 기반 null 인증 검증
-    private Member getLoggedInMemberOrThrow(Member member) {
-        if (member == null) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-        return member;
     }
 }

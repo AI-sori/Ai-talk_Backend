@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .formLogin(form -> form.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated());
 
         return http.build();
     }
