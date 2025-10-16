@@ -1,18 +1,23 @@
 package com.example.aitalk.domain.member;
 
 import io.swagger.v3.oas.annotations.Operation;
-import com.example.aitalk.api.dto.Response;
+
+import com.example.aitalk.api.dto.CommonResponse;
 import com.example.aitalk.domain.member.dto.join.MemberJoinRequestDTO;
 import com.example.aitalk.domain.member.dto.join.MemberJoinResponseDTO;
 import com.example.aitalk.domain.member.dto.login.MemberLoginRequestDTO;
 import com.example.aitalk.domain.member.dto.login.MemberLoginResponseDTO;
 import com.example.aitalk.domain.member.dto.profile.MemberProfileResponseDTO;
 import com.example.aitalk.domain.member.dto.profile.MemberProfileUpdateRequestDTO;
+import com.example.aitalk.global.util.ResponseUtil;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -23,90 +28,71 @@ import java.io.IOException;
 public class MemberController {
     private final MemberService memberService;
 
-    /* 회원가입 진행 */
+    // 회원가입
     @PostMapping("/join")
     @ApiResponse(responseCode = "200", description = "성공")
-    @ApiResponse(responseCode = "401", description = "이미 가입된 회원")
-    public Response<MemberJoinResponseDTO> join(@ModelAttribute @Valid MemberJoinRequestDTO memberJoinRequestDTO) throws IOException {
+    // @ApiResponse(responseCode = "401", description = "이미 가입된 회원")
+    public ResponseEntity<CommonResponse<MemberJoinResponseDTO>> join(@ModelAttribute @Valid MemberJoinRequestDTO memberJoinRequestDTO) throws IOException {
         MemberJoinResponseDTO response = memberService.join(memberJoinRequestDTO);
 
-        if (response.getStatusCode() == 401) {
-            return Response.error(response);
-        }
-        return Response.success(response);
+        return ResponseUtil.success(response);
     }
-    /* 로그인 */
+
+    // 로그인
     @Operation(summary = "로그인", description = "이메일과 비밀번호를 사용해 로그인합니다.")
     @ApiResponse(responseCode = "200", description = "로그인 성공")
-    @ApiResponse(responseCode = "401", description = "로그인 실패 (이메일 또는 비밀번호 불일치)")
-
+    // @ApiResponse(responseCode = "401", description = "로그인 실패 (이메일 또는 비밀번호 불일치)")
     @PostMapping("/login")
-    public Response<MemberLoginResponseDTO> login(
-            @RequestBody MemberLoginRequestDTO memberLoginRequestDTO,
-            HttpSession session) { // 세션 주입
+    public ResponseEntity<CommonResponse<MemberLoginResponseDTO>> login(
+        @RequestBody MemberLoginRequestDTO memberLoginRequestDTO,
+        HttpSession session) { // 세션 관리를 위해 HttpSession 유지
 
         MemberLoginResponseDTO memberLoginResponseDTO = memberService.login(memberLoginRequestDTO);
 
-        if (memberLoginResponseDTO.getStatusCode() == 401) {
-            return Response.error(memberLoginResponseDTO);
-        }
-
-        // 로그인 성공 시 실제 사용자 객체(Member)를 세션에 저장
-        // 이메일로 `Member` 객체를 찾고, 세션에 저장
         Member member = memberService.findByEmail(memberLoginResponseDTO.getEmail());
-        session.setAttribute("loginUser", member); // 전체 객체 저장
+        session.setAttribute("loginUser", member);
 
-        return Response.success(memberLoginResponseDTO);
+        return ResponseUtil.success(memberLoginResponseDTO);
     }
 
 
-    /* 프로필 조회 */
+    // 프로필 조회
     @GetMapping("/profile")
-    public Response<MemberProfileResponseDTO> getProfile(@SessionAttribute("loginUser") Member member) {
+    public ResponseEntity<CommonResponse<MemberProfileResponseDTO>> getProfile(@AuthenticationPrincipal Member member) {
         MemberProfileResponseDTO profile = memberService.getProfile(member);
-        return Response.success(profile);
+        return ResponseUtil.success(profile);
     }
 
-    /* 프로필 수정 */
+    // 프로필 수정
     @PutMapping("/profile")
-    public Response<String> updateProfile(
-            @SessionAttribute("loginUser") Member member,
-            @ModelAttribute @Valid MemberProfileUpdateRequestDTO updateRequestDTO) throws IOException {
+    public ResponseEntity<CommonResponse<String>> updateProfile(
+        @AuthenticationPrincipal Member member,
+        @ModelAttribute @Valid MemberProfileUpdateRequestDTO updateRequestDTO) throws IOException {
 
         memberService.updateProfile(member, updateRequestDTO);
-        return Response.success("프로필이 성공적으로 수정되었습니다.");
+        return ResponseUtil.success(null);
     }
 
     @PostMapping("/logout")
     @Operation(summary = "로그아웃", description = "현재 로그인한 사용자의 세션을 만료시킵니다.")
     @ApiResponse(responseCode = "200", description = "로그아웃 성공")
-    @ApiResponse(responseCode = "400", description = "로그인된 사용자 없음")
-    public Response<String> logout(HttpSession session) {
-        // 세션에 로그인된 사용자 정보가 없을 경우
-        if (session.getAttribute("loginUser") == null) {
-            return Response.error("로그인된 사용자가 없습니다.");
-        }
-
-        // 세션 무효화 (전체 제거)
-        session.invalidate();
-
-        return Response.success("로그아웃 되었습니다.");
+    // @ApiResponse(responseCode = "400", description = "로그인된 사용자 없음")
+    public ResponseEntity<CommonResponse<String>> logout(HttpSession session) {
+        session.invalidate(); // 세션 무효화
+        return ResponseUtil.success(null);
     }
 
-    /* 회원 탈퇴 */
+    // 회원 탈퇴
     @DeleteMapping("/delete")
     @Operation(summary = "회원 탈퇴", description = "로그인한 사용자의 계정을 삭제합니다.")
     @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공")
-    @ApiResponse(responseCode = "400", description = "로그인된 사용자 없음")
-    public Response<String> delete(@SessionAttribute(name = "loginUser", required = false) Member member,
-                                     HttpSession session) {
-        if (member == null) {
-            return Response.error("로그인된 사용자가 없습니다.");
-        }
+    // @ApiResponse(responseCode = "400", description = "로그인된 사용자 없음")
+    public ResponseEntity<CommonResponse<String>> delete(@AuthenticationPrincipal Member member,
+        HttpSession session) {
 
         memberService.delete(member);
         session.invalidate(); // 세션 만료
 
-        return Response.success("회원 탈퇴가 완료되었습니다.");
+        return ResponseUtil.success(null);
     }
 }
