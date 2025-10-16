@@ -3,12 +3,10 @@ package com.example.aitalk.domain.community.comment;
 import com.example.aitalk.api.exception.BusinessException;
 import com.example.aitalk.api.exception.ErrorCode;
 import com.example.aitalk.domain.community.comment.dto.CommentRequestDTO;
-import com.example.aitalk.domain.community.comment.dto.CommentResponseDTO;
 import com.example.aitalk.domain.community.post.CommunityPost;
 import com.example.aitalk.domain.community.post.CommunityPostRepository;
 import com.example.aitalk.domain.community.post.dto.CommunityPostResponseListDTO;
 import com.example.aitalk.domain.member.Member;
-import com.example.aitalk.domain.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,13 +20,9 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final CommunityPostRepository postRepository;
-    private final MemberRepository memberRepository;
 
     // 댓글 생성
-    public void createComment(CommentRequestDTO dto, Long userId) {
-        validateUserLoggedIn(userId);
-
-        Member member = getMemberOrThrow(userId);
+    public void createComment(CommentRequestDTO dto, Member member) {
         CommunityPost post = getPostOrThrow(dto.getPostId());
 
         Comment comment = new Comment();
@@ -39,19 +33,8 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
-    // 댓글 조회
-    // public List<CommentResponseDTO> getComments(Long postId) {
-    //     getPostOrThrow(postId);
-    //     return commentRepository.findByPostId(postId)
-    //         .stream()
-    //         .map(CommentResponseDTO::new)
-    //         .collect(Collectors.toList());
-    // }
-
     // 댓글 수정
     public void updateComment(Long commentId, String newContent, Long userId) {
-        validateUserLoggedIn(userId);
-
         Comment comment = getCommentOrThrow(commentId);
 
         validateCommentOwner(comment, userId);
@@ -62,8 +45,6 @@ public class CommentService {
 
     // 댓글 삭제
     public void deleteComment(Long commentId, Long userId) {
-        validateUserLoggedIn(userId);
-
         Comment comment = getCommentOrThrow(commentId);
 
         validateCommentOwner(comment, userId);
@@ -71,16 +52,8 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
-    public Comment getCommentById(Long commentId) {
-        return commentRepository.findById(commentId).orElse(null);
-    }
-
     // 본인이 작성한 댓글 목록
     public List<CommunityPostResponseListDTO> getMyComments(Member member) {
-        if (member == null) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-
         List<Comment> comments = commentRepository.findByMember(member);
 
         return comments.stream()
@@ -101,19 +74,6 @@ public class CommentService {
                 );
             })
             .collect(Collectors.toList());
-    }
-
-     // 사용자 인증(로그인) 유효성 검증
-    private void validateUserLoggedIn(Long userId) {
-        if (userId == null) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-    }
-
-    // ID를 통한 Member 엔티티 조회
-    private Member getMemberOrThrow(Long userId) {
-        return memberRepository.findById(userId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
    // ID를 통한 Comment 엔티티 조회

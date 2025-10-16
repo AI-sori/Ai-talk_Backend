@@ -8,7 +8,6 @@ import com.example.aitalk.domain.member.Member;
 import com.example.aitalk.global.util.ResponseUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.*;
