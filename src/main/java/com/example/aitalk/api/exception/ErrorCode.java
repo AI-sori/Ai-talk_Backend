@@ -8,12 +8,31 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
-	BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다. 요청 형식을 확인해주세요."),
-	NOT_FOUND(HttpStatus.NOT_FOUND, "지원하지 않는 URL입니다."),
-	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "잘못된 HTTP method 요청입니다."),
-	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");
+	// ----------------------
+	// 400 Bad Request 계열 (일반적인 오류)
+	// ----------------------
+	BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON-400", "잘못된 요청입니다. 요청 형식을 확인해주세요."),
+
+	// 401 Unauthorized 계열 (인증 오류)
+	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH-401", "인증 정보가 유효하지 않습니다. 로그인이 필요합니다."),
+
+	// 403 Forbidden 계열 (권한/인가 오류)
+	NO_PERMISSION(HttpStatus.FORBIDDEN, "CMT-403", "해당 작업을 수행할 권한이 없습니다."),
+
+	// 404 Not Found 계열 (자원 없음)
+	NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON-404", "지원하지 않는 URL입니다."),
+	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MBR-404", "존재하지 않는 사용자 정보입니다."),
+	NOT_FOUND_POST(HttpStatus.NOT_FOUND, "PST-404", "존재하지 않는 게시글입니다."),
+	NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "CMT-404", "존재하지 않는 댓글입니다."),
+
+	// ----------------------
+	// 500 Internal Server Error 계열
+	// ----------------------
+	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "COMMON-405", "잘못된 HTTP method 요청입니다."),
+	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON-500", "서버 내부 오류입니다.");
 
 	private final HttpStatus httpStatus;
+	private final String code;
 	private final String msg;
 
 }
