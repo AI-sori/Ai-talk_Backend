@@ -35,11 +35,11 @@ public class CommunityPostController {
 
 	private final CommunityPostService communityPostService;
 
-	@PostMapping(value="/post", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PostMapping(value = "/post", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<CommonResponse<Void>> createPost(@RequestPart("dto") CommunityPostRequestDTO dto,
 		@RequestPart(value = "image") MultipartFile image, @AuthenticationPrincipal Member loginUser) throws
 		IOException {
-		communityPostService.createPost(dto, image,loginUser);
+		communityPostService.createPost(dto, image, loginUser);
 		return ResponseUtil.success(null);
 	}
 
@@ -63,7 +63,7 @@ public class CommunityPostController {
 	}
 
 	// 게시글 수정
-	@PutMapping(value="/post/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PutMapping(value = "/post/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<CommonResponse<Void>> updatePost(
 		@PathVariable Long id,
 		@RequestPart("dto") CommunityPostRequestDTO dto,

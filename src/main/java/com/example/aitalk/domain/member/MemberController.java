@@ -41,7 +41,7 @@ public class MemberController {
 	public ResponseEntity<CommonResponse<Void>> join(
 		@RequestPart("memberInfo") @Valid MemberJoinRequestDTO memberInfo,
 		@RequestPart("profileImage") MultipartFile profileImage
-		) throws IOException {
+	) throws IOException {
 		memberService.join(memberInfo, profileImage);
 
 		return ResponseUtil.success(null);

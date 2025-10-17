@@ -125,7 +125,8 @@ public class CommunityPostService {
 	}
 
 	// 게시글 수정
-	public void updatePost(Long postId, CommunityPostRequestDTO dto, MultipartFile image, Member member) throws IOException {
+	public void updatePost(Long postId, CommunityPostRequestDTO dto, MultipartFile image, Member member) throws
+		IOException {
 
 		CommunityPost post = getPostOrThrow(postId);
 
