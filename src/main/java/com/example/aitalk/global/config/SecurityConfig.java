@@ -46,7 +46,6 @@ public class SecurityConfig {
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
-
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
@@ -55,7 +54,13 @@ public class SecurityConfig {
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 			.formLogin(form -> form.disable())
 			.httpBasic(httpBasic -> httpBasic.disable())
-			.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated());
+			.authorizeHttpRequests(authorize -> authorize
+				.requestMatchers(
+					"/swagger-ui/**",
+					"/v3/api-docs/**",
+					"/api-docs/**"
+				).permitAll()
+				.anyRequest().authenticated());
 
 		return http.build();
 	}
