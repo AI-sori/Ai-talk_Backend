@@ -11,5 +11,4 @@ public class CommunityPostRequestDTO {
 	private String category;
 	private String title;
 	private String content;
-	private MultipartFile image;
 }

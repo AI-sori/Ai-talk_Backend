@@ -4,17 +4,19 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.aitalk.api.dto.CommonResponse;
 import com.example.aitalk.domain.community.post.dto.CommunityPostRequestDTO;
@@ -33,11 +35,11 @@ public class CommunityPostController {
 
 	private final CommunityPostService communityPostService;
 
-	@PostMapping("/post")
-	public ResponseEntity<CommonResponse<Void>> createPost(@ModelAttribute CommunityPostRequestDTO dto,
-		@AuthenticationPrincipal Member loginUser) throws
+	@PostMapping(value="/post", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<CommonResponse<Void>> createPost(@RequestPart("dto") CommunityPostRequestDTO dto,
+		@RequestPart(value = "image") MultipartFile image, @AuthenticationPrincipal Member loginUser) throws
 		IOException {
-		communityPostService.createPost(dto, loginUser);
+		communityPostService.createPost(dto, image,loginUser);
 		return ResponseUtil.success(null);
 	}
 
@@ -61,13 +63,14 @@ public class CommunityPostController {
 	}
 
 	// 게시글 수정
-	@PutMapping("/post/{id}")
+	@PutMapping(value="/post/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<CommonResponse<Void>> updatePost(
 		@PathVariable Long id,
-		@ModelAttribute CommunityPostRequestDTO dto,
+		@RequestPart("dto") CommunityPostRequestDTO dto,
+		@RequestPart(value = "image") MultipartFile image,
 		@AuthenticationPrincipal Member loginUser
 	) throws IOException {
-		communityPostService.updatePost(id, dto, loginUser);
+		communityPostService.updatePost(id, dto, image, loginUser);
 		return ResponseUtil.success(null);
 	}
 

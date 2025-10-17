@@ -27,25 +27,25 @@ public class MemberService {
 	private final S3Uploader s3Uploader;
 
 	// 회원가입
-	public void join(MemberJoinRequestDTO memberJoinRequestDTO) throws IOException {
+	public void join(MemberJoinRequestDTO memberInfo, MultipartFile profileImage) throws IOException {
 
-		if (memberRepository.findMemberByEmail(memberJoinRequestDTO.getEmail()).isPresent()) {
+		if (memberRepository.findMemberByEmail(memberInfo.getEmail()).isPresent()) {
 			throw new BusinessException(ErrorCode.ALREADY_SIGNED_UP);
 		}
 
 		String imageUrl = null;
 		try {
-			if (memberJoinRequestDTO.getProfileImage() != null && !memberJoinRequestDTO.getProfileImage().isEmpty()) {
-				imageUrl = s3Uploader.upload(memberJoinRequestDTO.getProfileImage(), "profile-images");
+			if (profileImage != null && !profileImage.isEmpty()) {
+				imageUrl = s3Uploader.upload(profileImage, "profile-images");
 			}
 		} catch (IOException e) {
 			throw new BusinessException(ErrorCode.IMAGE_UPLOAD_FAILED);
 		}
 
 		Member member = Member.builder()
-			.email(memberJoinRequestDTO.getEmail())
-			.password(bCryptPasswordEncoder.encode(memberJoinRequestDTO.getPassword()))
-			.nickname(memberJoinRequestDTO.getNickname())
+			.email(memberInfo.getEmail())
+			.password(bCryptPasswordEncoder.encode(memberInfo.getPassword()))
+			.nickname(memberInfo.getNickname())
 			.profileImage(imageUrl)
 			.createdAt(LocalDateTime.now())
 			.build();

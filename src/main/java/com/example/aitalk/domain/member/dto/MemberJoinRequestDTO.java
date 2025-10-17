@@ -24,7 +24,4 @@ public class MemberJoinRequestDTO {
 	private String password; // 비밀번호 (VARCHAR(255))
 
 	private String nickname; // 닉네임 (NULL 허용, VARCHAR(255))
-
-	private MultipartFile profileImage;  // 이미지 파일 필드 추가
-
 }

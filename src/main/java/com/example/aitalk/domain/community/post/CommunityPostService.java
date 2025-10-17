@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.aitalk.api.exception.BusinessException;
 import com.example.aitalk.api.exception.ErrorCode;
@@ -34,7 +35,7 @@ public class CommunityPostService {
 	private final LikeRepository likeRepository;
 	private final S3Uploader s3Uploader;
 
-	public void createPost(CommunityPostRequestDTO dto, Member member) throws IOException {
+	public void createPost(CommunityPostRequestDTO dto, MultipartFile image, Member member) throws IOException {
 
 		CommunityPost post = new CommunityPost();
 		post.setMember(member);
@@ -42,8 +43,8 @@ public class CommunityPostService {
 		post.setTitle(dto.getTitle());
 		post.setContent(dto.getContent());
 
-		if (dto.getImage() != null && !dto.getImage().isEmpty()) {
-			String imageUrl = s3Uploader.upload(dto.getImage());
+		if (image != null && !image.isEmpty()) {
+			String imageUrl = s3Uploader.upload(image);
 			post.setImage(imageUrl);
 		}
 
@@ -124,7 +125,7 @@ public class CommunityPostService {
 	}
 
 	// 게시글 수정
-	public void updatePost(Long postId, CommunityPostRequestDTO dto, Member member) throws IOException {
+	public void updatePost(Long postId, CommunityPostRequestDTO dto, MultipartFile image, Member member) throws IOException {
 
 		CommunityPost post = getPostOrThrow(postId);
 
@@ -133,8 +134,8 @@ public class CommunityPostService {
 		post.setCategory(dto.getCategory());
 		post.setTitle(dto.getTitle());
 		post.setContent(dto.getContent());
-		if (dto.getImage() != null && !dto.getImage().isEmpty()) {
-			String imageUrl = s3Uploader.upload(dto.getImage());
+		if (image != null && !image.isEmpty()) {
+			String imageUrl = s3Uploader.upload(image);
 			post.setImage(imageUrl);
 		}
 
