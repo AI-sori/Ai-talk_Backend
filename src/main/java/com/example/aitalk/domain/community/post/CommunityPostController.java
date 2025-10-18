@@ -23,6 +23,7 @@ import com.example.aitalk.domain.community.post.dto.CommunityPostRequestDTO;
 import com.example.aitalk.domain.community.post.dto.CommunityPostResponseDTO;
 import com.example.aitalk.domain.community.post.dto.CommunityPostResponseListDTO;
 import com.example.aitalk.domain.member.Member;
+import com.example.aitalk.domain.member.MemberDetails;
 import com.example.aitalk.global.util.ResponseUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,9 +38,9 @@ public class CommunityPostController {
 
 	@PostMapping(value = "/post", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<CommonResponse<Void>> createPost(@RequestPart("dto") CommunityPostRequestDTO dto,
-		@RequestPart(value = "image") MultipartFile image, @AuthenticationPrincipal Member loginUser) throws
+		@RequestPart(value = "image") MultipartFile image, @AuthenticationPrincipal MemberDetails memberDetails) throws
 		IOException {
-		communityPostService.createPost(dto, image, loginUser);
+		communityPostService.createPost(dto, image, memberDetails.getMember());
 		return ResponseUtil.success(null);
 	}
 
@@ -56,8 +57,8 @@ public class CommunityPostController {
 	// 게시글 단건 조회 (DTO로 반환)
 	@GetMapping("/{id}")
 	public ResponseEntity<CommonResponse<CommunityPostResponseDTO>> getPost(@PathVariable Long id,
-		@AuthenticationPrincipal(expression = "isAuthenticated() ? principal : null") Member loginUser) {
-		CommunityPostResponseDTO dto = communityPostService.getPostById(id, loginUser);
+		@AuthenticationPrincipal MemberDetails memberDetails) {
+		CommunityPostResponseDTO dto = communityPostService.getPostById(id, memberDetails.getMember());
 
 		return ResponseUtil.success(dto);
 	}
@@ -68,9 +69,9 @@ public class CommunityPostController {
 		@PathVariable Long id,
 		@RequestPart("dto") CommunityPostRequestDTO dto,
 		@RequestPart(value = "image") MultipartFile image,
-		@AuthenticationPrincipal Member loginUser
+		@AuthenticationPrincipal MemberDetails memberDetails
 	) throws IOException {
-		communityPostService.updatePost(id, dto, image, loginUser);
+		communityPostService.updatePost(id, dto, image, memberDetails.getMember());
 		return ResponseUtil.success(null);
 	}
 
@@ -78,25 +79,25 @@ public class CommunityPostController {
 	@DeleteMapping("/post/{id}")
 	public ResponseEntity<CommonResponse<Void>> deletePost(
 		@PathVariable Long id,
-		@AuthenticationPrincipal Member loginUser
+		@AuthenticationPrincipal MemberDetails memberDetails
 	) {
-		communityPostService.deletePost(id, loginUser);
+		communityPostService.deletePost(id, memberDetails.getMember());
 		return ResponseUtil.success(null);
 	}
 
 	// 내가 쓴/좋아요 누른 게시글 목록 조회
 	@GetMapping({"/my-posts", "/my-likes"})
 	public ResponseEntity<CommonResponse<List<CommunityPostResponseListDTO>>> getMyList(
-		@AuthenticationPrincipal Member loginUser,
+		@AuthenticationPrincipal MemberDetails memberDetails,
 		HttpServletRequest request
 	) {
 		List<CommunityPostResponseListDTO> results;
 		String requestURI = request.getRequestURI(); // 현재 요청의 URL 경로를 가져오기
 
 		if (requestURI.contains("/my-posts")) {
-			results = communityPostService.getMyPosts(loginUser);
+			results = communityPostService.getMyPosts(memberDetails.getMember());
 		} else { // /my-likes
-			results = communityPostService.getLikedPosts(loginUser);
+			results = communityPostService.getLikedPosts(memberDetails.getMember());
 		}
 
 		return ResponseUtil.success(results);
@@ -105,17 +106,17 @@ public class CommunityPostController {
 	// 좋아요 기능
 	@PostMapping("/{postId}/like")
 	public ResponseEntity<CommonResponse<Void>> likePost(@PathVariable Long postId,
-		@AuthenticationPrincipal Member loginUser
+		@AuthenticationPrincipal MemberDetails memberDetails
 	) {
-		communityPostService.likePost(postId, loginUser);
+		communityPostService.likePost(postId, memberDetails.getMember());
 		return ResponseUtil.success(null);
 	}
 
 	@DeleteMapping("/{postId}/like")
 	public ResponseEntity<CommonResponse<Void>> unlikePost(@PathVariable Long postId,
-		@AuthenticationPrincipal Member loginUser
+		@AuthenticationPrincipal MemberDetails memberDetails
 	) {
-		communityPostService.unlikePost(postId, loginUser);
+		communityPostService.unlikePost(postId, memberDetails.getMember());
 		return ResponseUtil.success(null);
 	}
 

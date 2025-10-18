@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.aitalk.api.dto.CommonResponse;
 import com.example.aitalk.domain.member.Member;
+import com.example.aitalk.domain.member.MemberDetails;
 import com.example.aitalk.domain.mypage.dto.QnaRequestDTO;
 import com.example.aitalk.domain.mypage.dto.QnaResponseDTO;
 import com.example.aitalk.global.util.ResponseUtil;
@@ -30,16 +31,16 @@ public class QnaController {
 
 	@PostMapping
 	public ResponseEntity<CommonResponse<Void>> createQna(@RequestBody QnaRequestDTO dto,
-		@AuthenticationPrincipal Member loginUser) {
+		@AuthenticationPrincipal MemberDetails memberDetails) {
 
-		qnaService.createQna(dto, loginUser);
+		qnaService.createQna(dto, memberDetails.getMember());
 
 		return ResponseUtil.success(null);
 	}
 
 	@GetMapping
-	public ResponseEntity<CommonResponse<List<QnaResponseDTO>>> getMyQnas(@AuthenticationPrincipal Member loginUser) {
-		return ResponseUtil.success(qnaService.getMyQnas(loginUser));
+	public ResponseEntity<CommonResponse<List<QnaResponseDTO>>> getMyQnas(@AuthenticationPrincipal MemberDetails memberDetails) {
+		return ResponseUtil.success(qnaService.getMyQnas(memberDetails.getMember()));
 	}
 
 	@GetMapping("/{id}")
@@ -51,9 +52,9 @@ public class QnaController {
 	public ResponseEntity<CommonResponse<Void>> updateQna(
 		@PathVariable Long id,
 		@RequestBody QnaRequestDTO dto,
-		@AuthenticationPrincipal Member loginUser
+		@AuthenticationPrincipal MemberDetails memberDetails
 	) {
-		qnaService.updateQna(id, dto, loginUser.getId());
+		qnaService.updateQna(id, dto, memberDetails.getMember().getId());
 
 		return ResponseUtil.success(null);
 	}
@@ -61,9 +62,9 @@ public class QnaController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<CommonResponse<Void>> deleteQna(
 		@PathVariable Long id,
-		@AuthenticationPrincipal Member loginUser
+		@AuthenticationPrincipal MemberDetails memberDetails
 	) {
-		qnaService.deleteQna(id, loginUser.getId());
+		qnaService.deleteQna(id, memberDetails.getMember().getId());
 
 		return ResponseUtil.success(null);
 	}
