@@ -37,7 +37,8 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://ai-talkk.netlify.app"));
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://ai-talkk.netlify.app",
+			"http://localhost:8080", "http://127.0.0.1:8080"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setAllowCredentials(true);
@@ -51,12 +52,15 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-			.csrf(csrf -> csrf.disable())
+			.csrf(csrf -> csrf
+				.ignoringRequestMatchers("/members/join")
+			)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 			.formLogin(form -> form.disable())
 			.httpBasic(httpBasic -> httpBasic.disable())
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers(
+					"/members/join",
 					"/swagger-ui/**",
 					"/v3/api-docs/**",
 					"/api-docs/**"
