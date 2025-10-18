@@ -1,5 +1,7 @@
 package com.example.aitalk.domain.member.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -22,4 +24,6 @@ public class MemberJoinRequestDTO {
 	private String password; // 비밀번호 (VARCHAR(255))
 
 	private String nickname; // 닉네임 (NULL 허용, VARCHAR(255))
+
+	private MultipartFile profileImage;
 }

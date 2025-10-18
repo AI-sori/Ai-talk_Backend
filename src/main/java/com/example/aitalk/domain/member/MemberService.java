@@ -27,7 +27,7 @@ public class MemberService {
 	private final S3Uploader s3Uploader;
 
 	// 회원가입
-	public void join(MemberJoinRequestDTO memberInfo, MultipartFile profileImage) throws IOException {
+	public void join(MemberJoinRequestDTO memberInfo) throws IOException {
 
 		if (memberRepository.findMemberByEmail(memberInfo.getEmail()).isPresent()) {
 			throw new BusinessException(ErrorCode.ALREADY_SIGNED_UP);
@@ -35,8 +35,8 @@ public class MemberService {
 
 		String imageUrl = null;
 		try {
-			if (profileImage != null && !profileImage.isEmpty()) {
-				imageUrl = s3Uploader.upload(profileImage, "profile-images");
+			if (memberInfo.getProfileImage() != null && !memberInfo.getProfileImage().isEmpty()) {
+				imageUrl = s3Uploader.upload(memberInfo.getProfileImage(), "profile-images");
 			}
 		} catch (IOException e) {
 			throw new BusinessException(ErrorCode.IMAGE_UPLOAD_FAILED);

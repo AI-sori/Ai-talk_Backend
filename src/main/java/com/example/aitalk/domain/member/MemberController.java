@@ -24,6 +24,8 @@ import com.example.aitalk.domain.member.dto.MemberProfileUpdateRequestDTO;
 import com.example.aitalk.global.util.ResponseUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -39,10 +41,9 @@ public class MemberController {
 	@PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@ApiResponse(responseCode = "200", description = "성공")
 	public ResponseEntity<CommonResponse<Void>> join(
-		@RequestPart("memberInfo") @Valid MemberJoinRequestDTO memberInfo,
-		@RequestPart("profileImage") MultipartFile profileImage
+		@Valid @ModelAttribute MemberJoinRequestDTO memberJoinRequest
 	) throws IOException {
-		memberService.join(memberInfo, profileImage);
+		memberService.join(memberJoinRequest);
 
 		return ResponseUtil.success(null);
 	}
