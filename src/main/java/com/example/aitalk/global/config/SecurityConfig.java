@@ -52,15 +52,14 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-			.csrf(csrf -> csrf
-				.ignoringRequestMatchers("/members/join")
-			)
+			.csrf(csrf -> csrf.disable())
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 			.formLogin(form -> form.disable())
 			.httpBasic(httpBasic -> httpBasic.disable())
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers(
 					"/members/join",
+					"/members/login",
 					"/swagger-ui/**",
 					"/v3/api-docs/**",
 					"/api-docs/**"
