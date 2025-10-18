@@ -3,7 +3,11 @@ package com.example.aitalk.domain.member;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +20,7 @@ import com.example.aitalk.domain.member.dto.MemberProfileResponseDTO;
 import com.example.aitalk.domain.member.dto.MemberProfileUpdateRequestDTO;
 import com.example.aitalk.infra.s3.S3Uploader;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -54,7 +59,7 @@ public class MemberService {
 	}
 
 	// 로그인
-	public Member login(MemberLoginRequestDTO memberLoginRequestDTO) {
+	public Member login(MemberLoginRequestDTO memberLoginRequestDTO, HttpSession session) {
 
 		Member member = memberRepository.findMemberByEmail(memberLoginRequestDTO.getEmail())
 			.orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
@@ -63,6 +68,26 @@ public class MemberService {
 			throw new BusinessException(ErrorCode.INVALID_PASSWORD);
 		}
 
+		// -----------------------------------------------------------------
+		// [보안 로직 추가] Spring Security 컨텍스트에 인증 정보 저장
+
+		MemberDetails memberDetails = new MemberDetails(member);
+
+		Authentication authentication = new UsernamePasswordAuthenticationToken(
+			memberDetails,
+			null,
+			memberDetails.getAuthorities() // 권한 목록
+		);
+
+		// SecurityContextHolder에 인증 객체 저장
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+
+		// 변경된 SecurityContext를 HttpSession에 저장 및 동기화
+		// (이 코드를 통해 세션이 유지되고 다음 요청부터 인증 상태가 유지)
+		session.setAttribute(
+			HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+			SecurityContextHolder.getContext()
+		);
 		return member;
 	}
 
