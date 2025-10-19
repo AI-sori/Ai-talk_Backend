@@ -38,7 +38,8 @@ public class QnaController {
 	}
 
 	@GetMapping
-	public ResponseEntity<CommonResponse<List<QnaResponseDTO>>> getMyQnas(@AuthenticationPrincipal MemberDetails memberDetails) {
+	public ResponseEntity<CommonResponse<List<QnaResponseDTO>>> getMyQnas(
+		@AuthenticationPrincipal MemberDetails memberDetails) {
 		return ResponseUtil.success(qnaService.getMyQnas(memberDetails.getMember()));
 	}
 

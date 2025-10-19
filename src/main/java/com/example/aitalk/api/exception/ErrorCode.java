@@ -37,7 +37,9 @@ public enum ErrorCode {
 	ALREADY_SIGNED_UP(HttpStatus.CONFLICT, "MBR-409", "이미 등록된 이메일 주소입니다."),
 	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "AUTH-401", "비밀번호가 일치하지 않습니다."),
 	IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "INF-500", "프로필 이미지 업로드 중 오류가 발생했습니다."),
-	INVALID_MULTIPART_REQUEST(HttpStatus.BAD_REQUEST, "INF-400", "이미지를 등록하지 않는다면 해당 필드를 요청에서 제외하기 위하여, 'Send empty value' 버튼을 비활성화 해주세요"),
+	INVALID_MULTIPART_REQUEST(HttpStatus.BAD_REQUEST, "INF-400",
+		"이미지를 등록하지 않는다면 해당 필드를 요청에서 제외하기 위하여, 'Send empty value' 버튼을 비활성화 해주세요"),
+
 	// QnA
 	NOT_FOUND_QNA(HttpStatus.NOT_FOUND, "QNA-404", "해당 문의사항을 찾을 수 없습니다."),
 	ALREADY_REPLIED(HttpStatus.BAD_REQUEST, "QNA-400", "이미 답변이 완료된 문의사항은 수정/삭제할 수 없습니다.");

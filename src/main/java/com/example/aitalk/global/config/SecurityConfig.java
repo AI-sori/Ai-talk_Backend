@@ -2,6 +2,7 @@ package com.example.aitalk.global.config;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +43,7 @@ public class SecurityConfig {
 		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "https://ai-talkk.netlify.app",
 			"http://localhost:8080", "http://127.0.0.1:8080"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-		configuration.setAllowedHeaders(Arrays.asList("*"));
+		configuration.setAllowedHeaders(List.of("*"));
 		configuration.setAllowCredentials(true);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
