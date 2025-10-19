@@ -1,9 +1,11 @@
 package com.example.aitalk.global.config;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +17,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -56,6 +60,12 @@ public class SecurityConfig {
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 			.formLogin(form -> form.disable())
 			.httpBasic(httpBasic -> httpBasic.disable())
+
+			.exceptionHandling(exceptionHandling -> exceptionHandling
+				.authenticationEntryPoint((request, response, authException) -> handleUnauthorized(response))
+				.accessDeniedHandler((request, response, accessDeniedException) -> handleForbidden(response))
+			)
+
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers(
 					"/members/join",
@@ -67,5 +77,29 @@ public class SecurityConfig {
 				.anyRequest().authenticated());
 
 		return http.build();
+	}
+
+	// 401 Unauthorized (인증 실패): 로그인이 필요
+	private void handleUnauthorized(HttpServletResponse response) throws IOException {
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.setContentType("application/json;charset=UTF-8");
+		String jsonResponse = String.format(
+			"{\"code\": %d, \"msg\": \"%s\", \"data\": null}",
+			HttpServletResponse.SC_UNAUTHORIZED,
+			"로그인이 필요합니다."
+		);
+		response.getWriter().write(jsonResponse);
+	}
+
+	// 403 Forbidden (권한 부족): 접근 권한이 없음
+	private void handleForbidden(HttpServletResponse response) throws IOException {
+		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+		response.setContentType("application/json;charset=UTF-8");
+		String jsonResponse = String.format(
+			"{\"code\": %d, \"msg\": \"%s\", \"data\": null}",
+			HttpServletResponse.SC_FORBIDDEN,
+			"접근 권한이 없습니다."
+		);
+		response.getWriter().write(jsonResponse);
 	}
 }
