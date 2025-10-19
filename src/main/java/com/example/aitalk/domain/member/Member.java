@@ -1,14 +1,23 @@
 package com.example.aitalk.domain.member;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.example.aitalk.domain.community.comment.Comment;
+import com.example.aitalk.domain.community.like.Like;
+import com.example.aitalk.domain.community.post.CommunityPost;
+import com.example.aitalk.domain.mypage.Qna;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -46,5 +55,25 @@ public class Member {
 	@CreationTimestamp // 생성 시 자동 시간 입력
 	@Column(name = "updated_at", updatable = false)
 	private LocalDateTime createdAt;
+
+	@OneToMany(mappedBy = "member",
+		cascade = CascadeType.ALL,
+		orphanRemoval = true)
+	private List<CommunityPost> communityPosts = new ArrayList<>();
+
+	@OneToMany(mappedBy = "member",
+		cascade = CascadeType.ALL,
+		orphanRemoval = true)
+	private List<Comment> comments = new ArrayList<>();
+
+	@OneToMany(mappedBy = "member",
+		cascade = CascadeType.ALL,
+		orphanRemoval = true)
+	private List<Qna> qnas = new ArrayList<>();
+
+	@OneToMany(mappedBy = "member",
+		cascade = CascadeType.ALL,
+		orphanRemoval = true)
+	private List<Like> likes = new ArrayList<>();
 
 }
