@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,9 +31,21 @@ class GlobalExceptionHandler {
 	// [유효성 검사 오류 처리] @Valid DTO 필드 검증 실패 (400 Bad Request)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<CommonResponse<Void>> handleValidationException(MethodArgumentNotValidException ex) {
-		String errorMsg = ex.getBindingResult().getFieldError() != null
-			? ex.getBindingResult().getFieldError().getDefaultMessage()
-			: ErrorCode.BAD_REQUEST.getMsg();
+
+		String errorMsg;
+
+		FieldError fieldError = ex.getBindingResult().getFieldError();
+
+		if (fieldError != null) {
+			if ("profileImage".equals(fieldError.getField()) && "typeMismatch".equals(fieldError.getCode())) {
+				errorMsg = ErrorCode.INVALID_MULTIPART_REQUEST.getMsg();
+				return ResponseUtil.fail(HttpStatus.BAD_REQUEST, errorMsg);
+			}
+			errorMsg = fieldError.getDefaultMessage();
+		} else {
+			errorMsg = ErrorCode.BAD_REQUEST.getMsg();
+		}
+
 		logger.error("ValidationException: {}", errorMsg, ex);
 		return ResponseUtil.fail(HttpStatus.BAD_REQUEST, errorMsg);
 	}
