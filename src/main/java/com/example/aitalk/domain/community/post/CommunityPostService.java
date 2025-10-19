@@ -170,6 +170,7 @@ public class CommunityPostService {
 	}
 
 	// 좋아요 기능
+	@Transactional
 	public void likePost(Long postId, Member member) {
 		CommunityPost post = getPostOrThrow(postId);
 

@@ -17,6 +17,7 @@ import com.example.aitalk.api.dto.CommonResponse;
 import com.example.aitalk.domain.community.comment.dto.CommentRequestDTO;
 import com.example.aitalk.domain.community.post.dto.CommunityPostResponseListDTO;
 import com.example.aitalk.domain.member.Member;
+import com.example.aitalk.domain.member.MemberDetails;
 import com.example.aitalk.global.util.ResponseUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -32,9 +33,9 @@ public class CommentController {
 	@PostMapping("/comments")
 	public ResponseEntity<CommonResponse<Void>> createComment(
 		@RequestBody CommentRequestDTO dto,
-		@AuthenticationPrincipal Member loginUser
+		@AuthenticationPrincipal MemberDetails loginUser
 	) {
-		commentService.createComment(dto, loginUser);
+		commentService.createComment(dto, loginUser.getMember());
 		return ResponseUtil.success(null);
 	}
 
@@ -43,12 +44,12 @@ public class CommentController {
 	public ResponseEntity<CommonResponse<Void>> updateComment(
 		@PathVariable Long commentId,
 		@RequestBody CommentRequestDTO dto,
-		@AuthenticationPrincipal Member loginUser
+		@AuthenticationPrincipal MemberDetails loginUser
 	) {
 		commentService.updateComment(
 			commentId,
 			dto.getContent(),
-			loginUser.getId()
+			loginUser.getMember().getId()
 		);
 
 		return ResponseUtil.success(null);
@@ -58,11 +59,11 @@ public class CommentController {
 	@DeleteMapping("/comments/{commentId}")
 	public ResponseEntity<CommonResponse<Void>> deleteComment(
 		@PathVariable Long commentId,
-		@AuthenticationPrincipal Member loginUser
+		@AuthenticationPrincipal MemberDetails loginUser
 	) {
 		commentService.deleteComment(
 			commentId,
-			loginUser.getId()
+			loginUser.getMember().getId()
 		);
 
 		return ResponseUtil.success(null);
@@ -71,8 +72,8 @@ public class CommentController {
 	// 내가 쓴 댓글 목록 조회
 	@GetMapping("/my-comments")
 	public ResponseEntity<CommonResponse<List<CommunityPostResponseListDTO>>> getMyComments(
-		@AuthenticationPrincipal Member loginUser) {
-		List<CommunityPostResponseListDTO> comments = commentService.getMyComments(loginUser);
+		@AuthenticationPrincipal MemberDetails loginUser) {
+		List<CommunityPostResponseListDTO> comments = commentService.getMyComments(loginUser.getMember());
 
 		return ResponseUtil.success(comments);
 	}
