@@ -35,7 +35,7 @@ public class CommunityPostService {
 	private final LikeRepository likeRepository;
 	private final S3Uploader s3Uploader;
 
-	public void createPost(CommunityPostRequestDTO dto, MultipartFile image, Member member) throws IOException {
+	public void createPost(CommunityPostRequestDTO dto, Member member) throws IOException {
 
 		CommunityPost post = new CommunityPost();
 		post.setMember(member);
@@ -43,8 +43,8 @@ public class CommunityPostService {
 		post.setTitle(dto.getTitle());
 		post.setContent(dto.getContent());
 
-		if (image != null && !image.isEmpty()) {
-			String imageUrl = s3Uploader.upload(image);
+		if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
+			String imageUrl = s3Uploader.upload(dto.getProfileImage());
 			post.setImage(imageUrl);
 		}
 
@@ -125,7 +125,7 @@ public class CommunityPostService {
 	}
 
 	// 게시글 수정
-	public void updatePost(Long postId, CommunityPostRequestDTO dto, MultipartFile image, Member member) throws
+	public void updatePost(Long postId, CommunityPostRequestDTO dto, Member member) throws
 		IOException {
 
 		CommunityPost post = getPostOrThrow(postId);
@@ -135,8 +135,9 @@ public class CommunityPostService {
 		post.setCategory(dto.getCategory());
 		post.setTitle(dto.getTitle());
 		post.setContent(dto.getContent());
-		if (image != null && !image.isEmpty()) {
-			String imageUrl = s3Uploader.upload(image);
+
+		if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
+			String imageUrl = s3Uploader.upload(dto.getProfileImage());
 			post.setImage(imageUrl);
 		}
 

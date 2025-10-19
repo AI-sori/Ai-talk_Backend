@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,6 +28,7 @@ import com.example.aitalk.domain.member.MemberDetails;
 import com.example.aitalk.global.util.ResponseUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -37,10 +39,10 @@ public class CommunityPostController {
 	private final CommunityPostService communityPostService;
 
 	@PostMapping(value = "/post", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<CommonResponse<Void>> createPost(@RequestPart("dto") CommunityPostRequestDTO dto,
-		@RequestPart(value = "image") MultipartFile image, @AuthenticationPrincipal MemberDetails memberDetails) throws
+	public ResponseEntity<CommonResponse<Void>> createPost(@Valid @ModelAttribute CommunityPostRequestDTO dto,
+		@AuthenticationPrincipal MemberDetails memberDetails) throws
 		IOException {
-		communityPostService.createPost(dto, image, memberDetails.getMember());
+		communityPostService.createPost(dto, memberDetails.getMember());
 		return ResponseUtil.success(null);
 	}
 
@@ -67,11 +69,10 @@ public class CommunityPostController {
 	@PutMapping(value = "/post/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<CommonResponse<Void>> updatePost(
 		@PathVariable Long id,
-		@RequestPart("dto") CommunityPostRequestDTO dto,
-		@RequestPart(value = "image") MultipartFile image,
+		@Valid @ModelAttribute CommunityPostRequestDTO dto,
 		@AuthenticationPrincipal MemberDetails memberDetails
 	) throws IOException {
-		communityPostService.updatePost(id, dto, image, memberDetails.getMember());
+		communityPostService.updatePost(id, dto, memberDetails.getMember());
 		return ResponseUtil.success(null);
 	}
 
