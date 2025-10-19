@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.aitalk.api.dto.CommonResponse;
 import com.example.aitalk.domain.community.comment.dto.CommentRequestDTO;
 import com.example.aitalk.domain.community.post.dto.CommunityPostResponseListDTO;
-import com.example.aitalk.domain.member.Member;
 import com.example.aitalk.domain.member.MemberDetails;
 import com.example.aitalk.global.util.ResponseUtil;
 

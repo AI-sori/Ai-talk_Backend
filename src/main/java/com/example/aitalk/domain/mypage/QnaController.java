@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.aitalk.api.dto.CommonResponse;
-import com.example.aitalk.domain.member.Member;
 import com.example.aitalk.domain.member.MemberDetails;
 import com.example.aitalk.domain.mypage.dto.QnaRequestDTO;
 import com.example.aitalk.domain.mypage.dto.QnaResponseDTO;

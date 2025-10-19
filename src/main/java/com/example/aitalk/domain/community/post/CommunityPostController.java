@@ -15,15 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.example.aitalk.api.dto.CommonResponse;
 import com.example.aitalk.domain.community.post.dto.CommunityPostRequestDTO;
 import com.example.aitalk.domain.community.post.dto.CommunityPostResponseDTO;
 import com.example.aitalk.domain.community.post.dto.CommunityPostResponseListDTO;
-import com.example.aitalk.domain.member.Member;
 import com.example.aitalk.domain.member.MemberDetails;
 import com.example.aitalk.global.util.ResponseUtil;
 
