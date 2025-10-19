@@ -11,7 +11,7 @@ public enum ErrorCode {
 
 	// 400 Bad Request 계열 (일반적인 오류)
 	BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON-400", "잘못된 요청입니다. 요청 형식을 확인해주세요."),
-
+	INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "COMMON-400", "요청 인자가 유효하지 않습니다. 필드를 확인해주세요."),
 	// 401 Unauthorized 계열 (인증 오류)
 	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH-401", "인증 정보가 유효하지 않습니다. 로그인이 필요합니다."),
 

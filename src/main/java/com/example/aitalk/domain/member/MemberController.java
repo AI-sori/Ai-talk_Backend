@@ -37,8 +37,7 @@ public class MemberController {
 	@PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@ApiResponse(responseCode = "200", description = "성공")
 	public ResponseEntity<CommonResponse<Void>> join(
-		@Valid @ModelAttribute MemberJoinRequestDTO memberJoinRequest
-	) throws IOException {
+		@Valid @ModelAttribute MemberJoinRequestDTO memberJoinRequest) throws IOException {
 		memberService.join(memberJoinRequest);
 
 		return ResponseUtil.success(null);
@@ -48,26 +47,25 @@ public class MemberController {
 	@Operation(summary = "로그인", description = "이메일과 비밀번호를 사용해 로그인합니다.")
 	@ApiResponse(responseCode = "200", description = "로그인 성공")
 	@PostMapping("/login")
-	public ResponseEntity<CommonResponse<String>> login(
-		@RequestBody MemberLoginRequestDTO memberLoginRequestDTO,
+	public ResponseEntity<CommonResponse<String>> login(@RequestBody MemberLoginRequestDTO memberLoginRequestDTO,
 		HttpSession session) { // 세션 관리를 위해 HttpSession 유지
 
 		memberService.login(memberLoginRequestDTO, session);
 
-		return ResponseUtil.success( "sessionID: "+session.getId());
+		return ResponseUtil.success("sessionID: " + session.getId());
 	}
 
 	// 프로필 조회
 	@GetMapping("/profile")
-	public ResponseEntity<CommonResponse<MemberProfileResponseDTO>> getProfile(@AuthenticationPrincipal MemberDetails memberDetails) {
+	public ResponseEntity<CommonResponse<MemberProfileResponseDTO>> getProfile(
+		@AuthenticationPrincipal MemberDetails memberDetails) {
 		MemberProfileResponseDTO profile = memberService.getProfile(memberDetails.getMember());
 		return ResponseUtil.success(profile);
 	}
 
 	// 프로필 수정
 	@PutMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<CommonResponse<String>> updateProfile(
-		@AuthenticationPrincipal MemberDetails memberDetails,
+	public ResponseEntity<CommonResponse<String>> updateProfile(@AuthenticationPrincipal MemberDetails memberDetails,
 		@ModelAttribute @Valid MemberProfileUpdateRequestDTO updateRequestDTO) throws IOException {
 
 		memberService.updateProfile(memberDetails.getMember(), updateRequestDTO);

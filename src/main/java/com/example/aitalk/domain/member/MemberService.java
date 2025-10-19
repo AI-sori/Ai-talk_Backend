@@ -31,6 +31,8 @@ public class MemberService {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final S3Uploader s3Uploader;
 
+	private static final String BASE_PROFILE_IMAGE_URL = "https://my-aitalk-bucket.s3.ap-northeast-2.amazonaws.com/profile_default/profile_default.png";
+
 	// 회원가입
 	public void join(MemberJoinRequestDTO memberInfo) throws IOException {
 
@@ -39,12 +41,15 @@ public class MemberService {
 		}
 
 		String imageUrl = null;
-		try {
-			if (memberInfo.getProfileImage() != null && !memberInfo.getProfileImage().isEmpty()) {
+
+		if (memberInfo.getProfileImage() != null && !memberInfo.getProfileImage().isEmpty()) {
+			try {
 				imageUrl = s3Uploader.upload(memberInfo.getProfileImage(), "profile-images");
+			} catch (IOException e) {
+				throw new BusinessException(ErrorCode.IMAGE_UPLOAD_FAILED);
 			}
-		} catch (IOException e) {
-			throw new BusinessException(ErrorCode.IMAGE_UPLOAD_FAILED);
+		} else {
+			imageUrl = BASE_PROFILE_IMAGE_URL;
 		}
 
 		Member member = Member.builder()
