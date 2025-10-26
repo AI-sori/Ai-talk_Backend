@@ -1,0 +1,54 @@
+package com.example.aitalk.domain.mypage;
+
+import com.example.aitalk.domain.member.Member;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity
+@Getter
+@Setter
+public class Qna {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	private String title;
+	private String content;
+	private String reply;  // 관리자가 입력한 답변
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id")
+	private Member member;  // 문의한 사용자
+
+	public Qna() {
+	}
+
+	// 생성자 및 메서드들
+	public Qna(String title, String content, Member member) {
+		this.title = title;
+		this.content = content;
+		this.member = member;
+	}
+
+	public void update(String title, String content) {
+		this.title = title;
+		this.content = content;
+	}
+
+	public boolean isReplied() {
+		return reply != null && !reply.isBlank();
+	}
+
+	public Member getMember() {
+		return member;
+	}
+}
