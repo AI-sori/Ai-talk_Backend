@@ -19,6 +19,8 @@ import com.example.aitalk.domain.community.post.dto.CommunityPostResponseListDTO
 import com.example.aitalk.domain.member.MemberDetails;
 import com.example.aitalk.global.util.ResponseUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -30,6 +32,8 @@ public class CommentController {
 
 	// 댓글 생성
 	@PostMapping("/comments")
+	@Operation(summary = "댓글 작성", description = "현재 로그인한 사용자가 게시글에 댓글을 작성합니다.")
+	@ApiResponse(responseCode = "200", description = "성공")
 	public ResponseEntity<CommonResponse<Void>> createComment(
 		@RequestBody CommentRequestDTO dto,
 		@AuthenticationPrincipal MemberDetails loginUser
@@ -40,6 +44,8 @@ public class CommentController {
 
 	// 댓글 수정
 	@PutMapping("/comments/{commentId}")
+	@Operation(summary = "댓글 수정", description = "현재 로그인한 사용자가 작성한 댓글을 수정합니다.")
+	@ApiResponse(responseCode = "200", description = "성공")
 	public ResponseEntity<CommonResponse<Void>> updateComment(
 		@PathVariable Long commentId,
 		@RequestBody CommentRequestDTO dto,
@@ -56,6 +62,8 @@ public class CommentController {
 
 	// 댓글 삭제
 	@DeleteMapping("/comments/{commentId}")
+	@Operation(summary = "댓글 삭제", description = "현재 로그인한 사용자가 작성한 댓글을 삭제합니다.")
+	@ApiResponse(responseCode = "200", description = "성공")
 	public ResponseEntity<CommonResponse<Void>> deleteComment(
 		@PathVariable Long commentId,
 		@AuthenticationPrincipal MemberDetails loginUser
@@ -70,6 +78,8 @@ public class CommentController {
 
 	// 내가 쓴 댓글 목록 조회
 	@GetMapping("/my-comments")
+	@Operation(summary = "댓글 목록 조회", description = "현재 로그인한 사용자가 작성한 댓글의 게시글 목록을 조회합니다.")
+	@ApiResponse(responseCode = "200", description = "성공")
 	public ResponseEntity<CommonResponse<List<CommunityPostResponseListDTO>>> getMyComments(
 		@AuthenticationPrincipal MemberDetails loginUser) {
 		List<CommunityPostResponseListDTO> comments = commentService.getMyComments(loginUser.getMember());

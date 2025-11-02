@@ -35,6 +35,7 @@ public class MemberController {
 
 	// 회원가입
 	@PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@Operation(summary = "회원가입", description = "이메일과 비밀번호, 닉네임과 프로필 사진을 이용해 회원가입을 진행합니다.")
 	@ApiResponse(responseCode = "200", description = "성공")
 	public ResponseEntity<CommonResponse<Void>> join(
 		@Valid @ModelAttribute MemberJoinRequestDTO memberJoinRequest) throws IOException {
@@ -44,9 +45,9 @@ public class MemberController {
 	}
 
 	// 로그인
-	@Operation(summary = "로그인", description = "이메일과 비밀번호를 사용해 로그인합니다.")
-	@ApiResponse(responseCode = "200", description = "로그인 성공")
 	@PostMapping("/login")
+	@Operation(summary = "로그인", description = "이메일과 비밀번호를 사용해 로그인합니다.")
+	@ApiResponse(responseCode = "200", description = "성공")
 	public ResponseEntity<CommonResponse<String>> login(@RequestBody MemberLoginRequestDTO memberLoginRequestDTO,
 		HttpSession session) { // 세션 관리를 위해 HttpSession 유지
 
@@ -57,6 +58,8 @@ public class MemberController {
 
 	// 프로필 조회
 	@GetMapping("/profile")
+	@Operation(summary = "프로필 조회", description = "현재 로그인한 사용자의 프로필을 조회합니다.")
+	@ApiResponse(responseCode = "200", description = "성공")
 	public ResponseEntity<CommonResponse<MemberProfileResponseDTO>> getProfile(
 		@AuthenticationPrincipal MemberDetails memberDetails) {
 		MemberProfileResponseDTO profile = memberService.getProfile(memberDetails.getMember());
@@ -64,7 +67,10 @@ public class MemberController {
 	}
 
 	// 프로필 수정
+
 	@PutMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@Operation(summary = "프로필 수정", description = "현재 로그인한 사용자의 프로필을 수정합니다.")
+	@ApiResponse(responseCode = "200", description = "성공")
 	public ResponseEntity<CommonResponse<String>> updateProfile(@AuthenticationPrincipal MemberDetails memberDetails,
 		@ModelAttribute @Valid MemberProfileUpdateRequestDTO updateRequestDTO) throws IOException {
 
@@ -74,7 +80,7 @@ public class MemberController {
 
 	@PostMapping("/logout")
 	@Operation(summary = "로그아웃", description = "현재 로그인한 사용자의 세션을 만료시킵니다.")
-	@ApiResponse(responseCode = "200", description = "로그아웃 성공")
+	@ApiResponse(responseCode = "200", description = "성공")
 	public ResponseEntity<CommonResponse<String>> logout(HttpSession session) {
 		session.invalidate(); // 세션 무효화
 		return ResponseUtil.success(null);
@@ -83,7 +89,7 @@ public class MemberController {
 	// 회원 탈퇴
 	@DeleteMapping("/delete")
 	@Operation(summary = "회원 탈퇴", description = "로그인한 사용자의 계정을 삭제합니다.")
-	@ApiResponse(responseCode = "200", description = "회원 탈퇴 성공")
+	@ApiResponse(responseCode = "200", description = "성공")
 	public ResponseEntity<CommonResponse<String>> delete(@AuthenticationPrincipal MemberDetails memberDetails,
 		HttpSession session) {
 
