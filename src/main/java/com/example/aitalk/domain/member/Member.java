@@ -13,6 +13,7 @@ import com.example.aitalk.domain.mypage.Qna;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -75,5 +76,8 @@ public class Member {
 		cascade = CascadeType.ALL,
 		orphanRemoval = true)
 	private List<Like> likes = new ArrayList<>();
+
+	@Embedded
+	private LevelAssessment levelAssessment;
 
 }
