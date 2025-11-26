@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.example.aitalk.domain.community.comment.Comment;
 import com.example.aitalk.domain.community.like.Like;
 import com.example.aitalk.domain.community.post.CommunityPost;
+import com.example.aitalk.domain.level.LevelAssessment;
 import com.example.aitalk.domain.mypage.Qna;
 
 import jakarta.persistence.CascadeType;

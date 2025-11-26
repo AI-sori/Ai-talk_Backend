@@ -82,7 +82,7 @@ public class MemberController {
 	@Operation(summary = "로그아웃", description = "현재 로그인한 사용자의 세션을 만료시킵니다.")
 	@ApiResponse(responseCode = "200", description = "성공")
 	public ResponseEntity<CommonResponse<String>> logout(HttpSession session) {
-		session.invalidate(); // 세션 무효화
+		session.invalidate();
 		return ResponseUtil.success(null);
 	}
 
@@ -94,7 +94,7 @@ public class MemberController {
 		HttpSession session) {
 
 		memberService.delete(memberDetails.getMember());
-		session.invalidate(); // 세션 만료
+		session.invalidate();
 
 		return ResponseUtil.success(null);
 	}

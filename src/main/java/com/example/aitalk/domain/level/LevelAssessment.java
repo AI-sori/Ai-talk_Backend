@@ -1,4 +1,4 @@
-package com.example.aitalk.domain.member;
+package com.example.aitalk.domain.level;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
