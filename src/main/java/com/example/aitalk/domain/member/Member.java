@@ -77,8 +77,4 @@ public class Member {
 		cascade = CascadeType.ALL,
 		orphanRemoval = true)
 	private List<Like> likes = new ArrayList<>();
-
-	@Embedded
-	private LevelAssessment levelAssessment;
-
 }
