@@ -1,6 +1,17 @@
 package com.example.aitalk.domain.level;
 
-import jakarta.persistence.Embeddable;
+import java.time.LocalDateTime;
+
+import com.example.aitalk.domain.member.Member;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,8 +23,16 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Embeddable // JPA에게 이 클래스가 다른 엔티티에 '내장'될 수 있음을 알림
+@Entity
 public class LevelAssessment {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id", nullable = false)
+	private Member member;
 
 	private String level;
 
@@ -23,4 +42,7 @@ public class LevelAssessment {
 	private Double fluency;
 	private String issues;
 	private String weakArea;
+
+	@Column(nullable = false)
+	private LocalDateTime assessedAt = LocalDateTime.now();
 }
