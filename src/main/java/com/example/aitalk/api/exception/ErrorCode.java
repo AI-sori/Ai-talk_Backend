@@ -42,7 +42,11 @@ public enum ErrorCode {
 
 	// QnA
 	NOT_FOUND_QNA(HttpStatus.NOT_FOUND, "QNA-404", "해당 문의사항을 찾을 수 없습니다."),
-	ALREADY_REPLIED(HttpStatus.BAD_REQUEST, "QNA-400", "이미 답변이 완료된 문의사항은 수정/삭제할 수 없습니다.");
+	ALREADY_REPLIED(HttpStatus.BAD_REQUEST, "QNA-400", "이미 답변이 완료된 문의사항은 수정/삭제할 수 없습니다."),
+
+	// Program
+	INVALID_DATA(HttpStatus.BAD_REQUEST, "CMN-400", "진단 레벨 데이터가 유효하지 않습니다."),
+	ASSESSMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "LVL-404", "사용자의 레벨 평가 기록을 찾을 수 없습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;

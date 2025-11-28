@@ -9,10 +9,12 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.example.aitalk.domain.community.comment.Comment;
 import com.example.aitalk.domain.community.like.Like;
 import com.example.aitalk.domain.community.post.CommunityPost;
+import com.example.aitalk.domain.level.LevelAssessment;
 import com.example.aitalk.domain.mypage.Qna;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -76,4 +78,8 @@ public class Member {
 		orphanRemoval = true)
 	private List<Like> likes = new ArrayList<>();
 
+	@OneToMany(mappedBy = "member",
+		cascade = CascadeType.ALL,
+		orphanRemoval = true)
+	private List<LevelAssessment> levelAssessments = new ArrayList<>();
 }
