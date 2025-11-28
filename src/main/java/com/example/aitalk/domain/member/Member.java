@@ -77,4 +77,9 @@ public class Member {
 		cascade = CascadeType.ALL,
 		orphanRemoval = true)
 	private List<Like> likes = new ArrayList<>();
+
+	@OneToMany(mappedBy = "member",
+		cascade = CascadeType.ALL,
+		orphanRemoval = true)
+	private List<LevelAssessment> levelAssessments = new ArrayList<>();
 }
