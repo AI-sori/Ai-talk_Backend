@@ -14,6 +14,7 @@ import com.example.aitalk.api.exception.BusinessException;
 import com.example.aitalk.api.exception.ErrorCode;
 import com.example.aitalk.domain.level.LevelAssessment;
 import com.example.aitalk.domain.member.Member;
+import com.example.aitalk.domain.member.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,10 +24,14 @@ import lombok.RequiredArgsConstructor;
 public class ProgramService {
 
 	private final ProgramRepository programRepository;
+	private final MemberRepository memberRepository;
 
 	public List<ProgramResponseDTO> recommendPrograms(Member member) {
 
-		LevelAssessment assessment = member.getLevelAssessments().stream()
+		Member fullyLoadedMember = memberRepository.findByIdWithAssessments(member.getId())
+			.orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+
+		LevelAssessment assessment = fullyLoadedMember.getLevelAssessments().stream()
 			.sorted(Comparator.comparing(LevelAssessment::getAssessedAt).reversed())
 			.findFirst() // 최신 LevelAssessment
 			.orElse(null);
