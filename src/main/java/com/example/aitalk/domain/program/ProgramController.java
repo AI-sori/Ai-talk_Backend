@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.aitalk.api.dto.CommonResponse;
-import com.example.aitalk.domain.community.post.dto.CommunityPostResponseListDTO;
 import com.example.aitalk.domain.member.Member;
 import com.example.aitalk.domain.member.MemberDetails;
+import com.example.aitalk.domain.program.dto.ProgramResponseDTO;
 import com.example.aitalk.global.util.ResponseUtil;
 
 import io.swagger.v3.oas.annotations.Operation;

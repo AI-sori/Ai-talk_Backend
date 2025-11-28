@@ -15,6 +15,7 @@ import com.example.aitalk.api.exception.ErrorCode;
 import com.example.aitalk.domain.level.LevelAssessment;
 import com.example.aitalk.domain.member.Member;
 import com.example.aitalk.domain.member.MemberRepository;
+import com.example.aitalk.domain.program.dto.ProgramResponseDTO;
 
 import lombok.RequiredArgsConstructor;
 

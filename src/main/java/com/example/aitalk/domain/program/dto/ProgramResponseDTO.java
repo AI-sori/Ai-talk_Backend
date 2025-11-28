@@ -1,4 +1,6 @@
-package com.example.aitalk.domain.program;
+package com.example.aitalk.domain.program.dto;
+
+import com.example.aitalk.domain.program.Program;
 
 import lombok.Builder;
 import lombok.Getter;
