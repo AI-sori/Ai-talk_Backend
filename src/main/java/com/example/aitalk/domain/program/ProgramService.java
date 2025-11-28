@@ -69,6 +69,8 @@ public class ProgramService {
 				.filter(p -> p.getCategory() == category)
 				.collect(Collectors.toList());
 
+			categoryPrograms.sort(Comparator.comparing(Program::getId).reversed());
+
 			recommendedList.addAll(categoryPrograms);
 		}
 
