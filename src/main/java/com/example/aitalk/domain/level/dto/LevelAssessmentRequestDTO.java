@@ -1,5 +1,7 @@
 package com.example.aitalk.domain.level.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,10 +9,12 @@ import lombok.Setter;
 @Setter
 public class LevelAssessmentRequestDTO {
 	private String level;
-	private Double total_score;
+	@JsonProperty("total_score")
+	private Double totalScore;
 	private Double concentration;
 	private Double clarity;
 	private Double fluency;
 	private String issues;
-	private String weak_area;
+	@JsonProperty("weak_area")
+	private String weakArea;
 }

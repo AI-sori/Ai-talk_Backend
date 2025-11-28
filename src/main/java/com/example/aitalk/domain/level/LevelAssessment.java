@@ -50,11 +50,11 @@ public class LevelAssessment {
 	public LevelAssessment(Member member, LevelAssessmentRequestDTO dto) {
 		this.member = member;
 		this.level = dto.getLevel();
-		this.totalScore = dto.getTotal_score();
+		this.totalScore = dto.getTotalScore();
 		this.concentration = dto.getConcentration();
 		this.clarity = dto.getClarity();
 		this.fluency = dto.getFluency();
 		this.issues = dto.getIssues();
-		this.weakArea = dto.getWeak_area();
+		this.weakArea = dto.getWeakArea();
 	}
 }
