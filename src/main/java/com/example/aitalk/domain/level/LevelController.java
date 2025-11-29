@@ -40,7 +40,7 @@ public class LevelController {
 	}
 
 	// 레벨 리스트 조회 -> 그래프에 이용
-	@GetMapping("/graph") //
+	@GetMapping("/graph")
 	@Operation(summary = "사용자 레벨 평가 기록 전체 조회", description = "현재 로그인된 사용자의 모든 LevelAssessment 기록을 반환합니다.")
 	@ApiResponse(responseCode = "200", description = "성공")
 	public ResponseEntity<CommonResponse<List<LevelAssessmentResponseDTO>>> getAllAssessmentList(
