@@ -45,6 +45,7 @@ public class LevelAssessment {
 	private String weakArea;
 
 	@Column(nullable = false)
+	@Builder.Default
 	private LocalDateTime assessedAt = LocalDateTime.now();
 
 	public LevelAssessment(Member member, LevelAssessmentRequestDTO dto) {
