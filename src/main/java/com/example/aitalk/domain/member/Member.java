@@ -60,25 +60,30 @@ public class Member {
 	@OneToMany(mappedBy = "member",
 		cascade = CascadeType.ALL,
 		orphanRemoval = true)
+	@Builder.Default
 	private List<CommunityPost> communityPosts = new ArrayList<>();
 
 	@OneToMany(mappedBy = "member",
 		cascade = CascadeType.ALL,
 		orphanRemoval = true)
+	@Builder.Default
 	private List<Comment> comments = new ArrayList<>();
 
 	@OneToMany(mappedBy = "member",
 		cascade = CascadeType.ALL,
 		orphanRemoval = true)
+	@Builder.Default
 	private List<Qna> qnas = new ArrayList<>();
 
 	@OneToMany(mappedBy = "member",
 		cascade = CascadeType.ALL,
 		orphanRemoval = true)
+	@Builder.Default
 	private List<Like> likes = new ArrayList<>();
 
 	@OneToMany(mappedBy = "member",
 		cascade = CascadeType.ALL,
 		orphanRemoval = true)
+	@Builder.Default
 	private List<LevelAssessment> levelAssessments = new ArrayList<>();
 }
