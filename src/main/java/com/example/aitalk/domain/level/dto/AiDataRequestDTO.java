@@ -17,4 +17,8 @@ public class AiDataRequestDTO {
 	@Valid
 	@JsonProperty("user_profile")
 	private UserProfileDTO userProfile;
+
+	@Valid
+	@JsonProperty("diagnosis_info")
+	private DiagnosisInfoDTO diagnosisInfo;
 }

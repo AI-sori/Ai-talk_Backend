@@ -1,8 +1,10 @@
 package com.example.aitalk.domain.level;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
+import com.example.aitalk.domain.level.dto.DiagnosisInfoDTO;
 import com.example.aitalk.domain.level.dto.LevelAssessmentRequestDTO;
+import com.example.aitalk.domain.level.dto.ScoresDTO;
 import com.example.aitalk.domain.member.Member;
 
 import jakarta.persistence.Column;
@@ -45,17 +47,24 @@ public class LevelAssessment {
 	private String weakArea;
 
 	@Column(nullable = false)
-	@Builder.Default
-	private LocalDateTime assessedAt = LocalDateTime.now();
+	private LocalDate assessedDate;
 
-	public LevelAssessment(Member member, LevelAssessmentRequestDTO dto) {
-		this.member = member;
-		this.level = dto.getLevel();
-		this.totalScore = dto.getTotalScore();
-		this.concentration = dto.getConcentration();
-		this.clarity = dto.getClarity();
-		this.fluency = dto.getFluency();
-		this.issues = dto.getIssues();
-		this.weakArea = dto.getWeakArea();
+	@Column(nullable = false)
+	private Double readingTimeSeconds;
+
+	public LevelAssessment(Member member, LevelAssessmentRequestDTO dto, DiagnosisInfoDTO diagnosisInfo) {
+			this.member = member;
+			this.level = dto.getLevel();
+			this.totalScore = dto.getTotalScore();
+			this.issues = dto.getIssues();
+			this.weakArea = dto.getWeakArea();
+
+			ScoresDTO scores = dto.getScores();
+			this.concentration = scores.getConcentration();
+			this.clarity = scores.getClarity();
+			this.fluency = scores.getFluency();
+
+			this.assessedDate = LocalDate.parse(diagnosisInfo.getDate());
+			this.readingTimeSeconds = diagnosisInfo.getReadingTimeSeconds();
 	}
 }

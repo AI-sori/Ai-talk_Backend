@@ -1,6 +1,6 @@
 package com.example.aitalk.domain.level.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import com.example.aitalk.domain.level.LevelAssessment;
 
@@ -18,7 +18,9 @@ public class LevelAssessmentResponseDTO {
 	private Double fluency;
 	private String issues;
 	private String weakArea;
-	private LocalDateTime assessedAt;
+
+	private LocalDate assessedDate;
+	private Double readingTimeSeconds;
 
 	public static LevelAssessmentResponseDTO from(LevelAssessment assessment) {
 		return LevelAssessmentResponseDTO.builder()
@@ -30,7 +32,8 @@ public class LevelAssessmentResponseDTO {
 			.fluency(assessment.getFluency())
 			.issues(assessment.getIssues())
 			.weakArea(assessment.getWeakArea())
-			.assessedAt(assessment.getAssessedAt())
+			.assessedDate(assessment.getAssessedDate())
+			.readingTimeSeconds(assessment.getReadingTimeSeconds())
 			.build();
 	}
 }

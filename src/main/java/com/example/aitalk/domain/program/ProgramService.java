@@ -33,7 +33,7 @@ public class ProgramService {
 			.orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
 		LevelAssessment assessment = fullyLoadedMember.getLevelAssessments().stream()
-			.sorted(Comparator.comparing(LevelAssessment::getAssessedAt).reversed())
+			.sorted(Comparator.comparing(LevelAssessment::getAssessedDate).reversed())
 			.findFirst() // 최신 LevelAssessment
 			.orElse(null);
 

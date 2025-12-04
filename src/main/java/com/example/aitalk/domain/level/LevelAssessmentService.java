@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.aitalk.api.exception.BusinessException;
 import com.example.aitalk.api.exception.ErrorCode;
 import com.example.aitalk.domain.level.dto.AiDataRequestDTO;
+import com.example.aitalk.domain.level.dto.DiagnosisInfoDTO;
 import com.example.aitalk.domain.level.dto.LevelAssessmentRequestDTO;
 import com.example.aitalk.domain.level.dto.LevelAssessmentResponseDTO;
 import com.example.aitalk.domain.member.Member;
@@ -29,11 +30,12 @@ public class LevelAssessmentService {
 
 		String email = request.getUserProfile().getEmail();
 		LevelAssessmentRequestDTO assessmentDto = request.getLevelAssessment();
+		DiagnosisInfoDTO diagnosisInfo = request.getDiagnosisInfo();
 
 		Member member = memberRepository.findMemberByEmail(email)
 			.orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
-		LevelAssessment newAssessment = new LevelAssessment(member, assessmentDto);
+		LevelAssessment newAssessment = new LevelAssessment(member, assessmentDto, diagnosisInfo);
 
 		levelAssessmentRepository.save(newAssessment);
 	}
