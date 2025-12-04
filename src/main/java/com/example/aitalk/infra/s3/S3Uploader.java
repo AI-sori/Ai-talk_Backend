@@ -20,12 +20,6 @@ public class S3Uploader {
 
 	private S3Client s3;
 
-	@Value("${cloud.aws.credentials.access-key}")
-	private String accessKey;
-
-	@Value("${cloud.aws.credentials.secret-key}")
-	private String secretKey;
-
 	@Value("${cloud.aws.region.static}")
 	private String region;
 
@@ -36,8 +30,9 @@ public class S3Uploader {
 	public void init() {
 		s3 = S3Client.builder()
 			.region(Region.of(region))
-			.credentialsProvider(StaticCredentialsProvider.create(
-				AwsBasicCredentials.create(accessKey, secretKey)))
+			// AWS SDK의 기본 자격 증명 공급자 체인 사용으로 변경 (EC2 IAM Role 자동 인식)
+			// .credentialsProvider(StaticCredentialsProvider.create(
+			// 	AwsBasicCredentials.create(accessKey, secretKey)))
 			.build();
 	}
 
