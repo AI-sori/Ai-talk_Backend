@@ -24,4 +24,6 @@ public class CommunityPostResponseDTO {
 
 	private boolean liked;
 
+	private boolean isWriter;
+
 }

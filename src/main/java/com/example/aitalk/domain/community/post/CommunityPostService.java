@@ -60,7 +60,7 @@ public class CommunityPostService {
 			liked = likeRepository.existsByMemberAndPost(loginUser, post);
 		}
 
-		return convertToResponseDTO(post, true, liked);
+		return convertToResponseDTO(post, true, liked, loginUser.getId());
 	}
 
 	// 페이징 목록 조회 후 DTO 변환
@@ -91,10 +91,12 @@ public class CommunityPostService {
 	}
 
 	// 변환 메서드
-	private CommunityPostResponseDTO convertToResponseDTO(CommunityPost post, boolean includeComments, boolean liked) {
+	private CommunityPostResponseDTO convertToResponseDTO(CommunityPost post, boolean includeComments, boolean liked, Long loginUserId) {
 		Member writer = post.getMember();
 		String nickname = writer != null ? writer.getNickname() : "알 수 없음";
-		Long userId = writer != null ? writer.getId() : null;
+		Long postWriterId = writer != null ? writer.getId() : null;
+
+		boolean isPostWriter = loginUserId != null && loginUserId.equals(postWriterId);
 
 		List<CommentResponseDTO> commentDTOs = null;
 		if (includeComments) {
@@ -104,7 +106,8 @@ public class CommunityPostService {
 					comment.getMember().getNickname(),
 					comment.getMember().getId(),
 					comment.getContent(),
-					comment.getCreatedAt()
+					comment.getCreatedAt(),
+					loginUserId != null && loginUserId.equals(comment.getMember().getId())
 				))
 				.toList();
 		}
@@ -112,14 +115,15 @@ public class CommunityPostService {
 		return new CommunityPostResponseDTO(
 			post.getId(),
 			nickname,
-			userId,
+			postWriterId,
 			post.getCategory(),
 			post.getTitle(),
 			post.getContent(),
 			post.getImage(),
 			post.getLikeCount(),
 			commentDTOs,
-			liked
+			liked,
+			isPostWriter
 		);
 	}
 
