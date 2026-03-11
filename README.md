@@ -58,17 +58,14 @@ com.example.aitalk
 ```
 
 ---
+## 👥 Contributor (Backend)
 
-## 👥 팀 구성 및 역할 (Backend Lead)
-
-**[한다은 - Backend Lead / Project Manager]**
-- **기획 및 총괄**: 서비스 아이디어 기획, 전체 시스템 아키텍처 설계, 프로젝트 일정 및 회의 주도
-- **백엔드 시스템 구축**: 도메인 중심(DDD) 하이브리드 아키텍처 설계 및 백엔드 개발
-- **AI 연동 아키텍처**: Flask 서버와의 S2S(Server-to-Server) 통신 규격 설계 및 데이터 정합성 검증
-- **인프라 및 데브옵스**: AWS EC2 인프라 구축, Nginx 리버스 프록시 및 SSL 설정, 배포 자동화
-- **대외 성과**: 졸업 전시 진행 총괄 및 관련 학술 논문 투고
+| [한다은 (Backend Lead / Project Manager)](https://github.com/daeun-han)| 핵심 기여도 |
+| :---: | :--- |
+| <a href="https://github.com/daeun-han"><img src="https://github.com/daeun-han.png" width="150" height="150" style="border-radius:50%;" /></a> | • **기획 및 총괄**: 서비스 아이디어 기획, 전체 시스템 아키텍처 설계, 프로젝트 일정 및 회의 주도 <br> • **백엔드 시스템 구축**: 도메인 중심(DDD) 하이브리드 아키텍처 설계 및 백엔드 전 로직 개발 <br> • **AI 연동 아키텍처**: Flask 서버와의 S2S(Server-to-Server) 통신 규격 설계 및 데이터 정합성 검증 <br> • **인프라 및 데브옵스**: AWS EC2 인프라 구축, Nginx 리버스 프록시 및 SSL 설정, 배포 자동화 <br> • **대외 성과**: 졸업 전시 진행 총괄 및 관련 학술 논문 투고 |
 
 ---
+
 
 ## 🚀 프로젝트 성과
 - 독창적인 기획과 기술적 완성도를 인정받아 **학기말 프로젝트 발표에서 동상(3위) 수상**
