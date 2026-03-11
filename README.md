@@ -1,6 +1,5 @@
 # 🎙️ Ai-talk : AI 기반 시선 추적 및 음성 분석을 활용한 영유아 언어 발달 지원 시스템
 > **"아이의 목소리와 시선을 분석하여 언어 발달의 새로운 길을 제시합니다."**
-> 서울여자대학교 졸업 프로젝트 '동상(3위)' 수상🏆
 
 <img width="1673" height="985" alt="image" src="https://github.com/user-attachments/assets/ef56f0c2-af9e-47b4-a469-055eaddca2fb" />
 
